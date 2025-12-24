@@ -1,24 +1,27 @@
 using UnityEngine;
+using System.Collections; 
 
 [RequireComponent(typeof(CharacterController))]
 public class CharacterMovement : MonoBehaviour
 {
     [Header("Mobile Controls")]
-    public Joystick moveJoystick;  // Drag "Fixed Joystick" here
-    public TouchLook touchField;   // Drag "TouchZone" here
+    public Joystick moveJoystick;
+    public TouchLook touchField;
 
     [Header("Camera Settings")]
     public Camera playerCamera;
-    public float lookSensitivity = 0.2f; // Sensitivity for Touch
-    public float mouseSensitivity = 2.0f; // Sensitivity for PC Mouse
+    public float lookSensitivity = 0.2f;
     public float lookXLimit = 90.0f;
     [Range(0, 30)] public float cameraSmoothness = 15.0f; 
 
     [Header("Movement Settings")]
     public float walkSpeed = 3.0f;
     public float runSpeed = 6.0f;
-    public float jumpForce = 8.0f;
     public float gravity = 25.0f;
+
+    [Header("Roll Settings")]
+    public float rollSpeed = 10.0f; 
+    public float rollDuration = 0.8f; 
 
     [Header("Animation")]
     public Animator animator; 
@@ -31,56 +34,44 @@ public class CharacterMovement : MonoBehaviour
     private float targetRotationY = 0;
     private float currentRotationX = 0;
     private float currentRotationY = 0;
-    
-    // Internal
     private float rotationX = 0; 
+    
+    // States
     public bool canMove = true;
+    private bool isRolling = false; 
 
     void Start()
     {
         characterController = GetComponent<CharacterController>();
-        
-        // Auto-find Animator
         if (animator == null) animator = GetComponentInChildren<Animator>();
-
-        // Set initial rotation
         targetRotationY = transform.eulerAngles.y;
     }
 
     void Update()
     {
-        // =========================================================
-        // 1. CAMERA LOGIC (LOOKING)
-        // =========================================================
+        // 1. Camera Logic
         if (canMove)
         {
             float inputX = 0;
             float inputY = 0;
 
-            // A. Try Mobile Touch Input
             if (touchField != null)
             {
                 inputX = touchField.lookX * lookSensitivity;
                 inputY = touchField.lookY * lookSensitivity;
-                
-                // Reset touch immediately
                 touchField.lookX = 0;
                 touchField.lookY = 0;
             }
-            
-            // B. Fallback to PC Mouse (If no touch detected)
-            if (inputX == 0 && inputY == 0)
+            else if (Input.GetMouseButton(0)) 
             {
-                inputX = Input.GetAxis("Mouse X") * mouseSensitivity;
-                inputY = Input.GetAxis("Mouse Y") * mouseSensitivity;
+                inputX = Input.GetAxis("Mouse X") * 2.0f;
+                inputY = Input.GetAxis("Mouse Y") * 2.0f;
             }
 
-            // Calculate targets
             targetRotationX += -inputY;
             targetRotationX = Mathf.Clamp(targetRotationX, -lookXLimit, lookXLimit);
             targetRotationY += inputX;
 
-            // Smooth Camera Movement
             if (cameraSmoothness > 0)
             {
                 currentRotationX = Mathf.Lerp(currentRotationX, targetRotationX, cameraSmoothness * Time.deltaTime);
@@ -88,89 +79,92 @@ public class CharacterMovement : MonoBehaviour
             }
             else
             {
-                // Instant Movement (Valorant Style)
                 currentRotationX = targetRotationX;
                 currentRotationY = targetRotationY;
             }
 
-            // Apply Rotation
             playerCamera.transform.localRotation = Quaternion.Euler(currentRotationX, 0, 0);
             transform.rotation = Quaternion.Euler(0, currentRotationY, 0);
+            rotationX = targetRotationX;
         }
 
-        // =========================================================
-        // 2. MOVEMENT LOGIC (WALKING/RUNNING)
-        // =========================================================
+        // 2. Movement Logic
         Vector3 forward = transform.TransformDirection(Vector3.forward);
         Vector3 right = transform.TransformDirection(Vector3.right);
-
-        float verticalInput = 0;
-        float horizontalInput = 0;
-
-        // A. Mobile Joystick Input
-        if (moveJoystick != null)
+        
+        // --- ROLL LOGIC ---
+        if (isRolling)
         {
-            verticalInput = moveJoystick.Vertical;
-            horizontalInput = moveJoystick.Horizontal;
-        }
-
-        // B. Fallback to PC Keyboard (WASD)
-        if (verticalInput == 0 && horizontalInput == 0)
-        {
-            verticalInput = Input.GetAxis("Vertical");
-            horizontalInput = Input.GetAxis("Horizontal");
-        }
-
-        // Check for Run (Auto-run on mobile if pushed far, or Shift key on PC)
-        bool isRunning = (Mathf.Abs(verticalInput) > 0.8f) || Input.GetKey(KeyCode.LeftShift);
-
-        float curSpeedX = canMove ? (isRunning ? runSpeed : walkSpeed) * verticalInput : 0;
-        float curSpeedY = canMove ? (isRunning ? runSpeed : walkSpeed) * horizontalInput : 0;
-
-        float movementDirectionY = moveDirection.y;
-        moveDirection = (forward * curSpeedX) + (right * curSpeedY);
-
-        // =========================================================
-        // 3. JUMP & GRAVITY LOGIC
-        // =========================================================
-        if (characterController.isGrounded)
-        {
-            moveDirection.y = -2f; // Stick to ground
-
-            // PC Jump (Space) OR Mobile Jump Button (requires button setup)
-            if (Input.GetButtonDown("Jump"))
-            {
-                moveDirection.y = jumpForce;
-            }
+            moveDirection = forward * rollSpeed;
         }
         else
         {
-            // Apply Gravity
+            float verticalInput = 0;
+            float horizontalInput = 0;
+
+            if (moveJoystick != null)
+            {
+                verticalInput = moveJoystick.Vertical;
+                horizontalInput = moveJoystick.Horizontal;
+            }
+            else
+            {
+                verticalInput = Input.GetAxis("Vertical");
+                horizontalInput = Input.GetAxis("Horizontal");
+            }
+
+            bool isRunning = Mathf.Abs(verticalInput) > 0.8f || Mathf.Abs(horizontalInput) > 0.8f;
+            float curSpeedX = canMove ? (isRunning ? runSpeed : walkSpeed) * verticalInput : 0;
+            float curSpeedY = canMove ? (isRunning ? runSpeed : walkSpeed) * horizontalInput : 0;
+
+            moveDirection = (forward * curSpeedX) + (right * curSpeedY);
+
+            if (animator != null)
+            {
+                animator.SetFloat("InputX", horizontalInput, 0.1f, Time.deltaTime);
+                animator.SetFloat("InputY", verticalInput, 0.1f, Time.deltaTime);
+                animator.SetBool("IsRunning", isRunning);
+            }
+        }
+
+        // Gravity
+        if (characterController.isGrounded)
+        {
+            if (!isRolling) moveDirection.y = -2f; 
+            else moveDirection.y = -2f; 
+        }
+        else
+        {
             moveDirection.y -= gravity * Time.deltaTime;
         }
 
-        // Apply Final Move
         characterController.Move(moveDirection * Time.deltaTime);
-
-        // =========================================================
-        // 4. ANIMATION LOGIC
-        // =========================================================
-        if (animator != null)
-        {
-            animator.SetFloat("InputX", horizontalInput, 0.1f, Time.deltaTime);
-            animator.SetFloat("InputY", verticalInput, 0.1f, Time.deltaTime);
-            animator.SetBool("IsRunning", isRunning);
-            animator.SetBool("IsGrounded", characterController.isGrounded);
-        }
     }
 
-    // Helper functions
-    public void Jump()
+    // --- TRIGGERED BY UI BUTTON ---
+    public void DoRoll()
     {
-        if (characterController.isGrounded) moveDirection.y = jumpForce;
+        if (isRolling || !canMove) return;
+        StartCoroutine(RollRoutine());
     }
-    
-    public void FootStep() { } 
+
+    IEnumerator RollRoutine()
+    {
+        isRolling = true;
+        if (animator != null) animator.SetTrigger("DoRoll");
+
+        float originalHeight = characterController.height;
+        Vector3 originalCenter = characterController.center;
+        
+        characterController.height = 0.5f; 
+        characterController.center = new Vector3(0, 0.25f, 0); 
+
+        yield return new WaitForSeconds(rollDuration);
+
+        characterController.height = originalHeight;
+        characterController.center = originalCenter;
+        isRolling = false;
+    }
 
     public void ResetCamera()
     {
@@ -178,9 +172,14 @@ public class CharacterMovement : MonoBehaviour
         targetRotationY = transform.eulerAngles.y;
         currentRotationX = 0;
         currentRotationY = transform.eulerAngles.y;
-        
-        // Reset the visual camera rotation
-        if (playerCamera != null)
-            playerCamera.transform.localRotation = Quaternion.identity;
+        playerCamera.transform.localRotation = Quaternion.identity;
+    }
+
+    // ----------------------------------------------
+    // THIS FIXES THE RED ERROR!
+    // ----------------------------------------------
+    public void FootStep()
+    {
+        // Leaving this empty creates a "Receiver" so the animation stops complaining.
     }
 }

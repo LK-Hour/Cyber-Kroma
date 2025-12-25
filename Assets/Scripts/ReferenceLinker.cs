@@ -91,11 +91,6 @@ public class ReferenceLinker : MonoBehaviour
         
         if (shopPanel != null) waveManager.shopPanel = shopPanel;
         if (victoryPanel != null) waveManager.victoryPanel = victoryPanel;
-        
-        // Link wave and enemy count text
-        GameObject waveText = GameObject.Find("Canvas/HUD/WaveText");
-        GameObject enemyCountText = GameObject.Find("Canvas/HUD/EnemyCountText");
-        
         if (waveText != null) waveManager.waveText = waveText.GetComponent<TextMeshProUGUI>();
         if (enemyCountText != null) waveManager.enemyCountText = enemyCountText.GetComponent<TextMeshProUGUI>();
         

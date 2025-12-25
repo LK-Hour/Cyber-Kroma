@@ -14,7 +14,7 @@ public class CharacterShooting : MonoBehaviour
     public float fireRate = 0.15f;
     public int maxAmmo = 30;
 
-    private int currentAmmo;
+    public int currentAmmo; // Made public for shop access
     private float nextTimeToFire = 0f;
 
     // The Switch

@@ -44,7 +44,7 @@ public class TutorialManager : MonoBehaviour
         if (titleText != null)
         {
             titleText.text = "📚 TUTORIAL";
-            titleText.fontSize = 60;
+            titleText.fontSize = 80;
             titleText.alignment = TextAlignmentOptions.Center;
             titleText.color = new Color(0f, 0.9f, 1f); // Cyan
         }
@@ -83,7 +83,7 @@ public class TutorialManager : MonoBehaviour
         if (currentStep < tutorialSteps.Length)
         {
             instructionText.text = tutorialSteps[currentStep];
-            instructionText.fontSize = 32;
+            instructionText.fontSize = 70;
             instructionText.alignment = TextAlignmentOptions.Center;
 
             // Show start button on last step
@@ -125,9 +125,10 @@ public class TutorialManager : MonoBehaviour
     {
         Debug.Log("🚀 Starting game from tutorial...");
         
+        // Tutorial leads to Network Lobby (where players can host/join)
         if (GameSceneManager.Instance != null)
         {
-            GameSceneManager.Instance.LoadCombat();
+            GameSceneManager.Instance.LoadNetworkLobby();
         }
         else
         {

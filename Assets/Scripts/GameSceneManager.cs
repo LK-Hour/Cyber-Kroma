@@ -24,7 +24,9 @@ public class GameSceneManager : MonoBehaviour
     [Header("Scene Names")]
     public string mainMenuScene = "MainMenu";
     public string tutorialScene = "Tutorial";
-    public string combatScene = "Scene_Combat_Test";
+    public string networkLobbyScene = "Scene_Network_Core";  // Multiplayer lobby
+    public string gameplayScene = "Scene_Level_Design";      // Main gameplay
+    public string combatTestScene = "Scene_Combat_Test";     // Testing only
     
     [Header("Transition Settings")]
     public float transitionDelay = 0.5f;
@@ -65,12 +67,30 @@ public class GameSceneManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Load Combat scene (main gameplay)
+    /// Load Network Lobby (multiplayer lobby for Host/Join)
     /// </summary>
-    public void LoadCombat()
+    public void LoadNetworkLobby()
     {
-        Debug.Log("⚔️ Loading Combat Scene...");
-        StartCoroutine(LoadSceneAsync(combatScene));
+        Debug.Log("🌐 Loading Network Lobby...");
+        StartCoroutine(LoadSceneAsync(networkLobbyScene));
+    }
+    
+    /// <summary>
+    /// Load Main Gameplay scene (Scene_Level_Design)
+    /// </summary>
+    public void LoadGameplay()
+    {
+        Debug.Log("⚔️ Loading Main Gameplay...");
+        StartCoroutine(LoadSceneAsync(gameplayScene));
+    }
+    
+    /// <summary>
+    /// Load Combat Test scene (for testing only)
+    /// </summary>
+    public void LoadCombatTest()
+    {
+        Debug.Log("🧪 Loading Combat Test Scene...");
+        StartCoroutine(LoadSceneAsync(combatTestScene));
     }
 
     /// <summary>

@@ -46,7 +46,7 @@ public class MainMenuUI : MonoBehaviour
         if (titleText != null)
         {
             titleText.text = "⚡ CYBER KROMA ⚡\n<size=36>Defend Phnom Penh's Digital Heart</size>";
-            titleText.fontSize = 72;
+            titleText.fontSize = 85;
             titleText.alignment = TextAlignmentOptions.Center;
             titleText.color = Color.white;
             titleText.fontStyle = FontStyles.Bold;
@@ -65,7 +65,7 @@ public class MainMenuUI : MonoBehaviour
             if (btnText != null)
             {
                 btnText.text = "▶️ PLAY GAME";
-                btnText.fontSize = 36;
+                btnText.fontSize = 15;
             }
         }
 
@@ -79,7 +79,7 @@ public class MainMenuUI : MonoBehaviour
             if (btnText != null)
             {
                 btnText.text = "📚 TUTORIAL";
-                btnText.fontSize = 32;
+                btnText.fontSize = 15;
             }
         }
 
@@ -93,7 +93,7 @@ public class MainMenuUI : MonoBehaviour
             if (btnText != null)
             {
                 btnText.text = "❌ QUIT";
-                btnText.fontSize = 28;
+                btnText.fontSize = 15;
             }
         }
     }
@@ -124,12 +124,12 @@ public class MainMenuUI : MonoBehaviour
 
     void OnPlayClicked()
     {
-        Debug.Log("🎮 Play button clicked - Loading Combat!");
+        Debug.Log("🎮 Play button clicked - Loading Network Lobby!");
         
-        // Skip tutorial and go straight to combat
+        // Go to multiplayer lobby (Host/Join screen)
         if (GameSceneManager.Instance != null)
         {
-            GameSceneManager.Instance.LoadCombat();
+            GameSceneManager.Instance.LoadNetworkLobby();
         }
         else
         {

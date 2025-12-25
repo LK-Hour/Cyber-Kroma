@@ -13,11 +13,12 @@ public class NetworkLobbyManager : MonoBehaviour
     [Header("Lobby UI")]
     public GameObject lobbyPanel;
     public TextMeshProUGUI lobbyTitle;
+    public TextMeshProUGUI lobbyCodeText;  // Shows the generated lobby code
     public TextMeshProUGUI playerCountText;
     public Button hostButton;
     public Button joinButton;
     public Button startGameButton;
-    public TMP_InputField ipAddressInput;
+    public TMP_InputField joinCodeInput;  // Input for entering join code
     
     [Header("Class Selection UI")]
     public GameObject classSelectionPanel;
@@ -36,6 +37,7 @@ public class NetworkLobbyManager : MonoBehaviour
     
     private NetworkManager networkManager;
     private string selectedClass = "Firewall"; // Default class
+    private string currentLobbyCode = "";
     
     void Start()
     {
@@ -60,11 +62,21 @@ public class NetworkLobbyManager : MonoBehaviour
             lobbyTitle.fontSize = 48;
             lobbyTitle.alignment = TextAlignmentOptions.Center;
             lobbyTitle.color = new Color(0f, 0.9f, 1f); // Cyan
+        }Join Code Input placeholder
+        if (joinCodeInput != null)
+        {
+            joinCodeInput.text = "";
+            var placeholder = joinCodeInput.placeholder.GetComponent<TextMeshProUGUI>();
+            if (placeholder != null)
+            {
+                placeholder.text = "Enter Join Code...";
+            }
         }
         
-        // IP Input placeholder
-        if (ipAddressInput != null)
+        // Hide lobby code initially
+        if (lobbyCodeText != null)
         {
+            lobbyCodeText.gameObject.SetActive(false)
             ipAddressInput.text = "127.0.0.1"; // Default localhost
             ipAddressInput.placeholder.GetComponent<TextMeshProUGUI>().text = "Enter IP Address...";
         }
@@ -141,19 +153,19 @@ public class NetworkLobbyManager : MonoBehaviour
         if (btnText != null)
         {
             btnText.text = displayText;
-            btnText.fontSize = 28;
-        }
-    }
-    
-    #region Button Handlers
-    
-    void OnHostClicked()
-    {
-        Debug.Log("🏠 Starting as Host...");
-        
-        if (networkManager != null)
-        {
+            // Generate unique lobby code
+            currentLobbyCode = GenerateLobbyCode();
+            
             networkManager.StartHost();
+            
+            // Display lobby code for others to join
+            if (lobbyCodeText != null)
+            {
+                lobbyCodeText.gameObject.SetActive(true);
+                lobbyCodeText.text = $"🔑 Lobby Code: <color=#FFD700>{currentLobbyCode}</color>\n<size=20>Share this code with your friends!</size>";
+                lobbyCodeText.fontSize = 32;
+                lobbyCodeText.alignment = TextAlignmentOptions.Center;
+            }
             
             // Enable start button for host
             if (startGameButton != null)
@@ -162,10 +174,43 @@ public class NetworkLobbyManager : MonoBehaviour
             }
             
             // Show class selection
+            ShowClassSelection();joinCodeInput != null)
+        {
+            // Get join code from input field
+            string joinCode = joinCodeInput.text.Trim().ToUpper();
+            
+            if (string.IsNullOrEmpty(joinCode))
+            {
+                Debug.LogWarning("❌ Please enter a join code!");
+                return;
+            }
+            
+            // Validate join code (6 characters, alphanumeric)
+            if (joinCode.Length != 6)
+            {
+                Debug.LogWarning("❌ Join code must be 6 characters!");
+                return;
+            }
+            
+            // For local network testing, we use localhost
+            // In production, this would query a relay/matchmaking server with the code
+            string ipAddress = "127.0.0.1"; // Local network for now
+            
+            // Set connection data
+            var transport = networkManager.GetComponent<Unity.Netcode.Transports.UTP.UnityTransport>();
+            if (transport != null)
+            {
+                transport.SetConnectionData(ipAddress, 7777);
+            }
+            
+            networkManager.StartClient();
+            
+            // Show class selection
             ShowClassSelection();
             
             UpdatePlayerCount();
-        }
+            
+            Debug.Log($"✅ Attempting to join lobby: {joinCode}"
     }
     
     void OnJoinClicked()
@@ -234,6 +279,23 @@ public class NetworkLobbyManager : MonoBehaviour
         // Disable host/join buttons after joining
         if (hostButton != null) hostButton.interactable = false;
         if (joinButton != null) joinButton.interactable = false;
+    
+    /// <summary>
+    /// Generate a random 6-character alphanumeric lobby code
+    /// </summary>
+    string GenerateLobbyCode()
+    {
+        const string chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // Exclude similar chars (I,O,0,1)
+        System.Random random = new System.Random();
+        char[] code = new char[6];
+        
+        for (int i = 0; i < 6; i++)
+        {
+            code[i] = chars[random.Next(chars.Length)];
+        }
+        
+        return new string(code);
+    }
     }
     
     void UpdatePlayerCount()

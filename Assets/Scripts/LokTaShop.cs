@@ -22,9 +22,9 @@ public class LokTaShop : MonoBehaviour
     [Header("Player Reference")]
     public GameObject player;
     
-    private int playerPoints = 100; // Points earned from killing enemies
     private CharacterHealth playerHealth;
     private CharacterShooting playerShooting;
+    private PlayerPoints playerPoints;
 
     void Start()
     {
@@ -38,6 +38,9 @@ public class LokTaShop : MonoBehaviour
             playerHealth = player.GetComponent<CharacterHealth>();
             playerShooting = player.GetComponent<CharacterShooting>();
         }
+
+        // Get PlayerPoints singleton
+        playerPoints = PlayerPoints.Instance;
         
         // Setup button listeners
         if (healthButton != null)
@@ -57,7 +60,6 @@ public class LokTaShop : MonoBehaviour
             recommendationText.text = recommendation;
         }
         
-        UpdatePointsDisplay();
     }
 
     string GenerateRecommendation()
@@ -65,7 +67,7 @@ public class LokTaShop : MonoBehaviour
         // AI-like logic to recommend items
         if (playerHealth != null)
         {
-            float healthPercent = (float)playerHealth.currentHealth / playerHealth.maxHealth;
+            float healthPercent = (float)playerHealth.GetCurrentHealth() / playerHealth.GetMaxHealth();
             
             if (healthPercent < 0.3f)
             {
@@ -84,16 +86,13 @@ public class LokTaShop : MonoBehaviour
 
     void BuyHealthPotion()
     {
-        if (playerPoints >= healthPotionCost)
+        if (playerPoints != null && playerPoints.SpendPoints(healthPotionCost))
         {
-            playerPoints -= healthPotionCost;
-            
             if (playerHealth != null)
             {
                 playerHealth.Heal(healthPotionAmount);
             }
             
-            UpdatePointsDisplay();
             Debug.Log("Bought Health Potion!");
         }
         else
@@ -104,18 +103,15 @@ public class LokTaShop : MonoBehaviour
 
     void BuyShield()
     {
-        if (playerPoints >= shieldCost)
+        if (playerPoints != null && playerPoints.SpendPoints(shieldCost))
         {
-            playerPoints -= shieldCost;
-            
             // Give temporary shield buff
             if (playerHealth != null)
             {
-                // TODO: Implement shield system
-                playerHealth.currentHealth += 25;
+                // Shield = extra health
+                playerHealth.Heal(25);
             }
             
-            UpdatePointsDisplay();
             Debug.Log("Bought Shield!");
         }
         else
@@ -126,35 +122,18 @@ public class LokTaShop : MonoBehaviour
 
     void BuyAmmo()
     {
-        if (playerPoints >= ammoCost)
+        if (playerPoints != null && playerPoints.SpendPoints(ammoCost))
         {
-            playerPoints -= ammoCost;
-            
             if (playerShooting != null)
             {
                 playerShooting.currentAmmo += ammoAmount;
             }
             
-            UpdatePointsDisplay();
             Debug.Log("Bought Ammo!");
         }
         else
         {
             Debug.Log("Not enough points!");
-        }
-    }
-
-    public void AddPoints(int amount)
-    {
-        playerPoints += amount;
-        UpdatePointsDisplay();
-    }
-
-    void UpdatePointsDisplay()
-    {
-        if (pointsText != null)
-        {
-            pointsText.text = $"Points: {playerPoints}";
         }
     }
 

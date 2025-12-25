@@ -169,6 +169,13 @@ public class WaveManager : MonoBehaviour
         {
             activeEnemies.Remove(enemy);
             UpdateEnemyCountUI();
+
+            // Award points to player
+            PlayerPoints playerPoints = PlayerPoints.Instance;
+            if (playerPoints != null)
+            {
+                playerPoints.OnEnemyKilled(enemy.enemyType);
+            }
         }
     }
 

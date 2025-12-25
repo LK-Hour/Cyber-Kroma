@@ -104,4 +104,31 @@ public class CharacterHealth : MonoBehaviour
         if (movementScript != null) movementScript.enabled = true;
         if (shootingScript != null) shootingScript.enabled = true;
     }
+
+    /// <summary>
+    /// Heal the player - used by LokTaShop
+    /// </summary>
+    public void Heal(int amount)
+    {
+        if (isDead) return;
+        
+        currentHealth = Mathf.Min(currentHealth + amount, maxHealth);
+        Debug.Log($"Healed {amount}. Current health: {currentHealth}/{maxHealth}");
+    }
+
+    /// <summary>
+    /// Get current health for shop AI recommendations
+    /// </summary>
+    public int GetCurrentHealth()
+    {
+        return currentHealth;
+    }
+
+    /// <summary>
+    /// Get max health for percentage calculations
+    /// </summary>
+    public int GetMaxHealth()
+    {
+        return maxHealth;
+    }
 }

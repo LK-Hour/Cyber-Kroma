@@ -11,13 +11,13 @@ public class CharacterShooting : MonoBehaviour
     [Header("Gun Stats")]
     public float damage = 10f;
     public float range = 100f;
-    public float fireRate = 0.15f; // Speed of the machine gun
+    public float fireRate = 0.15f;
     public int maxAmmo = 30;
 
     private int currentAmmo;
     private float nextTimeToFire = 0f;
 
-    // This is the "Switch" for the button
+    // The Switch
     private bool isHoldingButton = false;
 
     void Start()
@@ -29,10 +29,18 @@ public class CharacterShooting : MonoBehaviour
 
     void Update()
     {
-        // LOGIC: If holding the Mobile Button OR holding Left Mouse
-        if (isHoldingButton || Input.GetButton("Fire1"))
+        // 1. RELOAD (Keep 'R' key for PC testing if you want)
+        if (Input.GetKeyDown(KeyCode.R) && currentAmmo < maxAmmo)
         {
-            // Only shoot if enough time has passed (Fire Rate)
+            Reload();
+            return;
+        }
+
+        // 2. SHOOTING LOGIC (The Fix)
+        // We REMOVED "|| Input.GetButton("Fire1")"
+        // Now it ONLY shoots if the UI Button is explicitly held down.
+        if (isHoldingButton)
+        {
             if (Time.time >= nextTimeToFire && currentAmmo > 0)
             {
                 nextTimeToFire = Time.time + fireRate;
@@ -41,15 +49,15 @@ public class CharacterShooting : MonoBehaviour
         }
     }
 
-    // --- CONNECT THESE TO THE EVENT TRIGGER ---
+    // --- BUTTON CONNECTORS ---
     public void StartFiring()
     {
-        isHoldingButton = true; // Finger is DOWN
+        isHoldingButton = true;
     }
 
     public void StopFiring()
     {
-        isHoldingButton = false; // Finger is UP
+        isHoldingButton = false;
     }
 
     public void Reload()
@@ -57,12 +65,12 @@ public class CharacterShooting : MonoBehaviour
         animator.SetTrigger("Reload");
         currentAmmo = maxAmmo;
     }
-    // ------------------------------------------
+    // ------------------------
 
     void Shoot()
     {
         currentAmmo--;
-        animator.SetTrigger("Shoot"); // Make sure this animation has NO LOOP time!
+        animator.SetTrigger("Shoot");
 
         RaycastHit hit;
         Vector3 targetPoint;

@@ -1,6 +1,9 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 /// <summary>
 /// Automatically links all component references in the scene
@@ -71,34 +74,28 @@ public class ReferenceLinker : MonoBehaviour
         GameObject ghost = GameObject.Find("GhostAccount");
         GameObject deepFake = GameObject.Find("DeepFake");
         
-        if (phisher != null) waveManager.phisherPrefab = phisher;
-        if (ghost != null) waveManager.ghostAccountPrefab = ghost;
-        if (deepFake != null) waveManager.deepFakePrefab = deepFake;
+        // WaveManager uses enemyPrefabs array [0]=Phisher, [1]=Ghost, [2]=DeepFake
+        waveManager.enemyPrefabs = new GameObject[3];
+        if (phisher != null) waveManager.enemyPrefabs[0] = phisher;
+        if (ghost != null) waveManager.enemyPrefabs[1] = ghost;
+        if (deepFake != null) waveManager.enemyPrefabs[2] = deepFake;
         
-        // Link DataCore
-        GameObject dataCore = GameObject.Find("DataCore");
-        if (dataCore != null)
-        {
-            waveManager.dataCore = dataCore.GetComponent<DataCoreHealth>();
-        }
-        
-        // Link Education UI
-        GameObject educationManager = GameObject.Find("EducationManager");
-        if (educationManager != null)
-        {
-            waveManager.educationUI = educationManager.GetComponent<ScamEducationUI>();
-        }
+        // WaveManager doesn't have dataCore or educationUI fields
+        // These are found via FindObjectOfType in their respective scripts
         
         // Link UI panels
         GameObject shopPanel = GameObject.Find("Canvas/ShopPanel");
         GameObject victoryPanel = GameObject.Find("Canvas/VictoryPanel");
-        GameObject defeatPanel = GameObject.Find("Canvas/DefeatPanel");
         GameObject waveText = GameObject.Find("Canvas/HUD/WaveText");
         GameObject enemyCountText = GameObject.Find("Canvas/HUD/EnemyCountText");
         
         if (shopPanel != null) waveManager.shopPanel = shopPanel;
         if (victoryPanel != null) waveManager.victoryPanel = victoryPanel;
-        if (defeatPanel != null) waveManager.defeatPanel = defeatPanel;
+        
+        // Link wave and enemy count text
+        GameObject waveText = GameObject.Find("Canvas/HUD/WaveText");
+        GameObject enemyCountText = GameObject.Find("Canvas/HUD/EnemyCountText");
+        
         if (waveText != null) waveManager.waveText = waveText.GetComponent<TextMeshProUGUI>();
         if (enemyCountText != null) waveManager.enemyCountText = enemyCountText.GetComponent<TextMeshProUGUI>();
         
@@ -123,12 +120,7 @@ public class ReferenceLinker : MonoBehaviour
             return;
         }
         
-        // Link shop panel
-        GameObject shopPanel = GameObject.Find("Canvas/ShopPanel");
-        if (shopPanel != null)
-        {
-            shop.shopPanel = shopPanel;
-        }
+        // LokTaShop doesn't have shopPanel field - it's controlled by WaveManager
         
         // Link recommendation text
         GameObject recText = GameObject.Find("Canvas/ShopPanel/RecommendationText");
@@ -137,30 +129,24 @@ public class ReferenceLinker : MonoBehaviour
             shop.recommendationText = recText.GetComponent<TextMeshProUGUI>();
         }
         
-        // Link buttons
+        // Link buttons - use actual field names from LokTaShop
         GameObject btnHealth = GameObject.Find("Canvas/ShopPanel/BtnHealth");
         GameObject btnShield = GameObject.Find("Canvas/ShopPanel/BtnShield");
         GameObject btnAmmo = GameObject.Find("Canvas/ShopPanel/BtnAmmo");
         
-        if (btnHealth != null) shop.btnHealth = btnHealth.GetComponent<Button>();
-        if (btnShield != null) shop.btnShield = btnShield.GetComponent<Button>();
-        if (btnAmmo != null) shop.btnAmmo = btnAmmo.GetComponent<Button>();
+        if (btnHealth != null) shop.healthButton = btnHealth.GetComponent<Button>();
+        if (btnShield != null) shop.shieldButton = btnShield.GetComponent<Button>();
+        if (btnAmmo != null) shop.ammoButton = btnAmmo.GetComponent<Button>();
         
         // Link player
         GameObject player = GameObject.Find("Player");
         if (player != null)
         {
             shop.player = player;
-            shop.playerShooting = player.GetComponent<CharacterShooting>();
-            shop.playerHealth = player.GetComponent<CharacterHealth>();
+            // playerShooting and playerHealth are private - set in LokTaShop.Start()
         }
         
-        // Link PlayerPoints
-        GameObject playerPoints = GameObject.Find("PlayerPoints");
-        if (playerPoints != null)
-        {
-            shop.playerPoints = playerPoints.GetComponent<PlayerPoints>();
-        }
+        // PlayerPoints is found via singleton in LokTaShop.Start()
         
         Debug.Log("✅ LokTaShop references linked");
     }
@@ -197,9 +183,9 @@ public class ReferenceLinker : MonoBehaviour
         GameObject btnClose = GameObject.Find("Canvas/EducationPanel/BtnCloseEducation");
         
         if (titleText != null) eduUI.titleText = titleText.GetComponent<TextMeshProUGUI>();
-        if (descText != null) eduUI.descriptionText = descText.GetComponent<TextMeshProUGUI>();
-        if (scamIcon != null) eduUI.scamIcon = scamIcon.GetComponent<Image>();
-        if (btnClose != null) eduUI.btnClose = btnClose.GetComponent<Button>();
+        if (descText != null) eduUI.descriptionEnglishText = descText.GetComponent<TextMeshProUGUI>();
+        if (scamIcon != null) eduUI.iconImage = scamIcon.GetComponent<Image>();
+        if (btnClose != null) eduUI.closeButton = btnClose.GetComponent<Button>();
         
         Debug.Log("✅ ScamEducationUI references linked");
     }
@@ -254,8 +240,10 @@ public class ReferenceLinker : MonoBehaviour
         Material dataMaterial = Resources.Load<Material>("DataCoreMaterial");
         if (dataMaterial == null)
         {
-            // Try alternate path
+            #if UNITY_EDITOR
+            // Try alternate path in editor only
             dataMaterial = AssetDatabase.LoadAssetAtPath<Material>("Assets/Materials/DataCoreMaterial.mat");
+            #endif
         }
         
         if (dataMaterial != null)

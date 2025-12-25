@@ -181,6 +181,28 @@ public class CharacterMovement : MonoBehaviour
     }
 
     // ----------------------------------------------
+    // Animation Event Callbacks (called from Roll animation)
+    // ----------------------------------------------
+    public void RollSound()
+    {
+        // TODO: Play roll sound effect here
+        // AudioSource.PlayClipAtPoint(rollSoundClip, transform.position);
+    }
+
+    public void CantRotate()
+    {
+        // Called during roll animation to prevent rotation
+        canMove = false;
+    }
+
+    public void EndRoll()
+    {
+        // Called at end of roll animation
+        isRolling = false;
+        canMove = true;
+    }
+
+    // ----------------------------------------------
     // THIS FIXES THE RED ERROR!
     // ----------------------------------------------
     public void FootStep()

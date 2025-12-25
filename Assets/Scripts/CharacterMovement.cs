@@ -102,16 +102,21 @@ public class CharacterMovement : MonoBehaviour
             float verticalInput = 0;
             float horizontalInput = 0;
 
+            // Combine Joystick + WASD input (whichever is stronger)
+            float joystickV = 0;
+            float joystickH = 0;
+            float keyboardV = Input.GetAxis("Vertical");    // W/S or Up/Down
+            float keyboardH = Input.GetAxis("Horizontal");  // A/D or Left/Right
+
             if (moveJoystick != null)
             {
-                verticalInput = moveJoystick.Vertical;
-                horizontalInput = moveJoystick.Horizontal;
+                joystickV = moveJoystick.Vertical;
+                joystickH = moveJoystick.Horizontal;
             }
-            else
-            {
-                verticalInput = Input.GetAxis("Vertical");
-                horizontalInput = Input.GetAxis("Horizontal");
-            }
+
+            // Use the stronger input source (allows both to work simultaneously)
+            verticalInput = Mathf.Abs(joystickV) > Mathf.Abs(keyboardV) ? joystickV : keyboardV;
+            horizontalInput = Mathf.Abs(joystickH) > Mathf.Abs(keyboardH) ? joystickH : keyboardH;
 
             bool isRunning = Mathf.Abs(verticalInput) > 0.8f || Mathf.Abs(horizontalInput) > 0.8f;
             float curSpeedX = canMove ? (isRunning ? runSpeed : walkSpeed) * verticalInput : 0;

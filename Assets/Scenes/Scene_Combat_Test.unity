@@ -166,6 +166,7 @@ GameObject:
   - component: {fileID: 122010781}
   - component: {fileID: 122010780}
   - component: {fileID: 122010779}
+  - component: {fileID: 122010784}
   m_Layer: 0
   m_Name: GhostAccount
   m_TagString: Untagged
@@ -283,6 +284,33 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &122010784
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 122010778}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4cc9ff3303b9d3c8fa58b8eefa9e70ce, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemyType: 0
+  dataCore: {fileID: 0}
+  player: {fileID: 0}
+  maxHealth: 50
+  moveSpeed: 3.5
+  attackDamage: 10
+  attackRange: 2
+  attackCooldown: 1.5
+  projectilePrefab: {fileID: 0}
+  firePoint: {fileID: 0}
+  shootingRange: 15
+  fireRate: 2
+  invisibleMaterial: {fileID: 0}
+  detectionRange: 5
+  playerMimicPrefab: {fileID: 0}
 --- !u!114 &130502550 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7204895752917303147, guid: 7aa6f6434be94e44583bd055d3a42eee, type: 3}
@@ -2004,6 +2032,7 @@ GameObject:
   - component: {fileID: 1639159432}
   - component: {fileID: 1639159431}
   - component: {fileID: 1639159430}
+  - component: {fileID: 1639159435}
   m_Layer: 0
   m_Name: Phisher
   m_TagString: Untagged
@@ -2121,6 +2150,33 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1639159435
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1639159429}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4cc9ff3303b9d3c8fa58b8eefa9e70ce, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemyType: 0
+  dataCore: {fileID: 0}
+  player: {fileID: 0}
+  maxHealth: 50
+  moveSpeed: 3.5
+  attackDamage: 10
+  attackRange: 2
+  attackCooldown: 1.5
+  projectilePrefab: {fileID: 0}
+  firePoint: {fileID: 0}
+  shootingRange: 15
+  fireRate: 2
+  invisibleMaterial: {fileID: 0}
+  detectionRange: 5
+  playerMimicPrefab: {fileID: 0}
 --- !u!1 &1641278472
 GameObject:
   m_ObjectHideFlags: 0
@@ -2337,6 +2393,7 @@ GameObject:
   - component: {fileID: 1770025119}
   - component: {fileID: 1770025118}
   - component: {fileID: 1770025117}
+  - component: {fileID: 1770025122}
   m_Layer: 0
   m_Name: DeepFake
   m_TagString: Untagged
@@ -2454,6 +2511,33 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1770025122
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1770025116}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4cc9ff3303b9d3c8fa58b8eefa9e70ce, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemyType: 0
+  dataCore: {fileID: 0}
+  player: {fileID: 0}
+  maxHealth: 50
+  moveSpeed: 3.5
+  attackDamage: 10
+  attackRange: 2
+  attackCooldown: 1.5
+  projectilePrefab: {fileID: 0}
+  firePoint: {fileID: 0}
+  shootingRange: 15
+  fireRate: 2
+  invisibleMaterial: {fileID: 0}
+  detectionRange: 5
+  playerMimicPrefab: {fileID: 0}
 --- !u!1 &1936958019
 GameObject:
   m_ObjectHideFlags: 0

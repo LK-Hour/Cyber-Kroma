@@ -71,13 +71,13 @@ public class LokTaShop : MonoBehaviour
             
             if (healthPercent < 0.3f)
             {
-                return "ចូ! អ្នកមានសុខភាពតិច! ទិញថ្នាំព្យាបាល Antivirus!\n(Chau! Your health is low! Buy Antivirus Potion!)";
+                return "ចៅ! អស់ឈាមហើយ! ទិញថ្នាំព្យាបាល Antivirus!\n(Chau! Your health is low! Buy Antivirus Potion!)";
             }
         }
         
         if (playerShooting != null && playerShooting.currentAmmo < 10)
         {
-            return "បាញ់ខ្លះទៀត! ទិញ Data Bullets!\n(Keep shooting! Buy Data Bullets!)";
+            return "បាញ់ទៀតទៅ! ហើយទិញ Data Bulletsផងចៅ!\n(Keep shooting! Buy Data Bullets!)";
         }
         
         // Default recommendation

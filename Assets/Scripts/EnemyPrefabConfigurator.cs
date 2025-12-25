@@ -57,20 +57,15 @@ public class EnemyPrefabConfigurator : MonoBehaviour
         if (enemyAI != null)
         {
             enemyAI.enemyType = EnemyAI.EnemyType.Phisher;
-            enemyAI.health = 100;
             enemyAI.maxHealth = 100;
             enemyAI.moveSpeed = 3.5f;
             enemyAI.attackDamage = 15;
-            enemyAI.attackRange = 10f;       // Long range for phishing attacks
-            enemyAI.attackCooldown = 2.0f;
-            enemyAI.detectionRange = 15f;
-            enemyAI.pointsValue = 10;
-            
-            // Phisher is ranged attacker
-            enemyAI.isRangedAttacker = true;
+            enemyAI.shootingRange = 10f;     // Phisher uses shootingRange for ranged attacks
+            enemyAI.attackRange = 2f;        // Fallback melee range
+            enemyAI.fireRate = 2.0f;
         }
         
-        Debug.Log("✅ Phisher configured: HP=100, Range=10, Damage=15");
+        Debug.Log("✅ Phisher configured: HP=100, ShootingRange=10, Damage=15");
     }
     #endregion
     
@@ -103,21 +98,15 @@ public class EnemyPrefabConfigurator : MonoBehaviour
         if (enemyAI != null)
         {
             enemyAI.enemyType = EnemyAI.EnemyType.GhostAccount;
-            enemyAI.health = 80;
             enemyAI.maxHealth = 80;
             enemyAI.moveSpeed = 5.0f;
             enemyAI.attackDamage = 25;       // High damage
             enemyAI.attackRange = 2f;        // Melee range
             enemyAI.attackCooldown = 1.5f;
-            enemyAI.detectionRange = 20f;
-            enemyAI.pointsValue = 15;
-            enemyAI.stealthDuration = 5f;    // Can go invisible
-            
-            // Ghost is fast melee attacker
-            enemyAI.isRangedAttacker = false;
+            enemyAI.detectionRange = 20f;    // Ghost Account uses detectionRange for stealth
         }
         
-        Debug.Log("✅ GhostAccount configured: HP=80, Speed=5.0, Damage=25, Stealth=5s");
+        Debug.Log("✅ GhostAccount configured: HP=80, Speed=5.0, Damage=25, Melee");
     }
     #endregion
     
@@ -150,17 +139,11 @@ public class EnemyPrefabConfigurator : MonoBehaviour
         if (enemyAI != null)
         {
             enemyAI.enemyType = EnemyAI.EnemyType.DeepFake;
-            enemyAI.health = 300;            // Tank health
-            enemyAI.maxHealth = 300;
+            enemyAI.maxHealth = 300;         // Tank health
             enemyAI.moveSpeed = 2.5f;
             enemyAI.attackDamage = 30;       // Very high damage
             enemyAI.attackRange = 15f;       // Very long range
             enemyAI.attackCooldown = 3.0f;   // Slower attacks
-            enemyAI.detectionRange = 25f;
-            enemyAI.pointsValue = 25;        // High reward
-            
-            // DeepFake is ranged tank
-            enemyAI.isRangedAttacker = true;
         }
         
         Debug.Log("✅ DeepFake configured: HP=300, Range=15, Damage=30, Tank");

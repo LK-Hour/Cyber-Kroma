@@ -1741,7 +1741,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebb19b5cefd7b9f9ca20a5d2def5e7e7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  animationType: 3
+  animationType: 2
   animationDuration: 0.5
   animationCurve:
     serializedVersion: 2
@@ -2132,7 +2132,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebb19b5cefd7b9f9ca20a5d2def5e7e7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  animationType: 3
+  animationType: 4
   animationDuration: 0.5
   animationCurve:
     serializedVersion: 2
@@ -2161,7 +2161,7 @@ MonoBehaviour:
   slideDirection: 3
   slideDistance: 1000
   useScaleBounce: 1
-  startScale: {x: 0.5, y: 0.5, z: 1}
+  startScale: {x: 0.3, y: 0.3, z: 1}
   overshootScale: {x: 1.1, y: 1.1, z: 1}
   useFade: 1
   startAlpha: 0
@@ -2744,8 +2744,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebb19b5cefd7b9f9ca20a5d2def5e7e7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  animationType: 3
-  animationDuration: 0.5
+  animationType: 5
+  animationDuration: 0.6
   animationCurve:
     serializedVersion: 2
     m_Curve:
@@ -2770,7 +2770,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  slideDirection: 3
+  slideDirection: 2
   slideDistance: 1000
   useScaleBounce: 1
   startScale: {x: 0.5, y: 0.5, z: 1}
@@ -2881,9 +2881,9 @@ MonoBehaviour:
   m_Script: {fileID: 1579710228}
   m_Name: 
   m_EditorClassIdentifier: 
-  pulseSpeed: 1.5
-  minIntensity: 0.5
-  maxIntensity: 2
+  pulseSpeed: 2
+  minIntensity: 0.7
+  maxIntensity: 1.5
 --- !u!1 &1639159429
 GameObject:
   m_ObjectHideFlags: 0
@@ -3572,8 +3572,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pulseSpeed: 1.5
-  minIntensity: 0.5
-  maxIntensity: 2
+  minIntensity: 0.6
+  maxIntensity: 1.3
 --- !u!1 &2028118157 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 193908, guid: 7aa6f6434be94e44583bd055d3a42eee, type: 3}

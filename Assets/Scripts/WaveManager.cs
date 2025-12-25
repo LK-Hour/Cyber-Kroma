@@ -182,12 +182,27 @@ public class WaveManager : MonoBehaviour
     public void OnCoreDestroyed()
     {
         gameOver = true;
-        Debug.Log("Game Over - Core Destroyed!");
+        Debug.Log("💀 Game Over - Core Destroyed!");
+        
+        // Show defeat UI panel
+        GameObject defeatPanel = GameObject.Find("DefeatPanel");
+        if (defeatPanel != null)
+        {
+            defeatPanel.SetActive(true);
+        }
+        
+        Time.timeScale = 0f;
+        
+        // Return to main menu after 5 seconds
+        if (GameSceneManager.Instance != null)
+        {
+            GameSceneManager.Instance.OnDefeat();
+        }
     }
 
     void OnVictory()
     {
-        Debug.Log("Victory! All waves defeated!");
+        Debug.Log("🏆 Victory! All waves defeated!");
         
         if (victoryPanel != null)
         {
@@ -195,6 +210,12 @@ public class WaveManager : MonoBehaviour
         }
         
         Time.timeScale = 0f;
+        
+        // Return to main menu after 5 seconds
+        if (GameSceneManager.Instance != null)
+        {
+            GameSceneManager.Instance.OnVictory();
+        }
     }
 
     void OpenShop()

@@ -6,7 +6,7 @@ using TMPro;
 public class WaveManager : MonoBehaviour
 {
     [Header("Wave Settings")]
-    public int totalWaves = 5;
+    public int totalWaves = 3;
     public int currentWave = 0;
     public float timeBetweenWaves = 10f;
     
@@ -52,22 +52,16 @@ public class WaveManager : MonoBehaviour
 
     void CreateDefaultWaves()
     {
-        waves = new WaveConfig[5];
+        waves = new WaveConfig[3];
         
-        // Wave 1: Easy
+        // Wave 1: Easy intro
         waves[0] = new WaveConfig { phisherCount = 5, ghostCount = 0, deepFakeCount = 0, spawnDelay = 1f };
         
-        // Wave 2: Introduce ghosts
-        waves[1] = new WaveConfig { phisherCount = 6, ghostCount = 2, deepFakeCount = 0, spawnDelay = 0.8f };
+        // Wave 2: Medium difficulty with ghosts
+        waves[1] = new WaveConfig { phisherCount = 7, ghostCount = 3, deepFakeCount = 0, spawnDelay = 0.7f };
         
-        // Wave 3: More enemies
-        waves[2] = new WaveConfig { phisherCount = 8, ghostCount = 3, deepFakeCount = 0, spawnDelay = 0.6f };
-        
-        // Wave 4: Heavy
-        waves[3] = new WaveConfig { phisherCount = 10, ghostCount = 4, deepFakeCount = 0, spawnDelay = 0.5f };
-        
-        // Wave 5: Boss wave
-        waves[4] = new WaveConfig { phisherCount = 8, ghostCount = 5, deepFakeCount = 1, spawnDelay = 0.5f };
+        // Wave 3: Final boss wave
+        waves[2] = new WaveConfig { phisherCount = 8, ghostCount = 5, deepFakeCount = 1, spawnDelay = 0.5f };
     }
 
     IEnumerator GameLoop()

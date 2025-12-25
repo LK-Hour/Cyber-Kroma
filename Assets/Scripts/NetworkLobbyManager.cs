@@ -210,9 +210,14 @@ public class NetworkLobbyManager : MonoBehaviour
             
             // Set connection data
             var transport = networkManager.GetComponent<Unity.Netcode.Transports.UTP.UnityTransport>();
-            if (transport != null));
-        }
-    }
+            if (transport != null)
+            {
+                transport.SetConnectionData(ipAddress, 7777);
+            }
+            
+            networkManager.StartClient();
+            
+            // Show class selection
             ShowClassSelection();
             
             UpdatePlayerCount();

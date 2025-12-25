@@ -118,7 +118,7 @@ public class NetworkLobbyManager : MonoBehaviour
             if (btnText != null)
             {
                 btnText.text = "🔗 JOIN GAME";
-                btnText.fontSize = 32;
+                btnText.fontSize = 15;
             }
         }
         
@@ -132,7 +132,7 @@ public class NetworkLobbyManager : MonoBehaviour
             if (btnText != null)
             {
                 btnText.text = "🚀 START GAME";
-                btnText.fontSize = 36;
+                btnText.fontSize = 15;
             }
         }
         
@@ -153,6 +153,16 @@ public class NetworkLobbyManager : MonoBehaviour
         if (btnText != null)
         {
             btnText.text = displayText;
+            btnText.fontSize = 30;
+        }
+    }
+    
+    void OnHostClicked()
+    {
+        Debug.Log("🏠 Hosting game...");
+        
+        if (networkManager != null)
+        {
             // Generate unique lobby code
             currentLobbyCode = GenerateLobbyCode();
             
@@ -255,8 +265,6 @@ public class NetworkLobbyManager : MonoBehaviour
         // This will sync the player's class choice across the network
     }
     
-    #endregion
-    
     void ShowClassSelection()
     {
         if (classSelectionPanel != null)
@@ -267,6 +275,7 @@ public class NetworkLobbyManager : MonoBehaviour
         // Disable host/join buttons after joining
         if (hostButton != null) hostButton.interactable = false;
         if (joinButton != null) joinButton.interactable = false;
+    }
     
     /// <summary>
     /// Generate a random 6-character alphanumeric lobby code

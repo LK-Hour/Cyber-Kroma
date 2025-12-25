@@ -284,10 +284,17 @@ public class UIButtonHoverScale : MonoBehaviour
     void Start()
     {
         rectTransform = GetComponent<RectTransform>();
+        if (rectTransform == null)
+        {
+            Debug.LogWarning($"⚠️ UIButtonHoverScale on '{gameObject.name}' requires RectTransform! Disabling component.");
+            enabled = false;
+        }
     }
     
     void Update()
     {
+        if (rectTransform == null) return;
+        
         Vector3 targetScale = isHovered ? hoverScale : normalScale;
         rectTransform.localScale = Vector3.Lerp(
             rectTransform.localScale, 

@@ -73,6 +73,13 @@ public class UIPanelAnimator : MonoBehaviour
             audioSource.playOnAwake = false;
         }
         
+        if (rectTransform == null)
+        {
+            Debug.LogWarning($"⚠️ UIPanelAnimator on '{gameObject.name}' requires RectTransform! Disabling component.");
+            enabled = false;
+            return;
+        }
+        
         originalPosition = rectTransform.anchoredPosition;
         originalScale = rectTransform.localScale;
     }

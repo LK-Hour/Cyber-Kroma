@@ -62,7 +62,9 @@ public class NetworkLobbyManager : MonoBehaviour
             lobbyTitle.fontSize = 48;
             lobbyTitle.alignment = TextAlignmentOptions.Center;
             lobbyTitle.color = new Color(0f, 0.9f, 1f); // Cyan
-        }Join Code Input placeholder
+        }
+        
+        // Join Code Input placeholder
         if (joinCodeInput != null)
         {
             joinCodeInput.text = "";
@@ -76,9 +78,7 @@ public class NetworkLobbyManager : MonoBehaviour
         // Hide lobby code initially
         if (lobbyCodeText != null)
         {
-            lobbyCodeText.gameObject.SetActive(false)
-            ipAddressInput.text = "127.0.0.1"; // Default localhost
-            ipAddressInput.placeholder.GetComponent<TextMeshProUGUI>().text = "Enter IP Address...";
+            lobbyCodeText.gameObject.SetActive(false);
         }
         
         // Start button initially disabled (only host can start)
@@ -174,7 +174,19 @@ public class NetworkLobbyManager : MonoBehaviour
             }
             
             // Show class selection
-            ShowClassSelection();joinCodeInput != null)
+            ShowClassSelection();
+            
+            UpdatePlayerCount();
+            
+            Debug.Log($"✅ Lobby created! Code: {currentLobbyCode}");
+        }
+    }
+    
+    void OnJoinClicked()
+    {
+        Debug.Log("🔗 Joining game...");
+        
+        if (networkManager != null && joinCodeInput != null)
         {
             // Get join code from input field
             string joinCode = joinCodeInput.text.Trim().ToUpper();
@@ -198,43 +210,14 @@ public class NetworkLobbyManager : MonoBehaviour
             
             // Set connection data
             var transport = networkManager.GetComponent<Unity.Netcode.Transports.UTP.UnityTransport>();
-            if (transport != null)
-            {
-                transport.SetConnectionData(ipAddress, 7777);
-            }
-            
-            networkManager.StartClient();
-            
-            // Show class selection
-            ShowClassSelection();
-            
-            UpdatePlayerCount();
-            
-            Debug.Log($"✅ Attempting to join lobby: {joinCode}"
+            if (transport != null));
+        }
     }
-    
-    void OnJoinClicked()
-    {
-        Debug.Log("🔗 Joining game...");
-        
-        if (networkManager != null && ipAddressInput != null)
-        {
-            // Get IP from input field
-            string ipAddress = ipAddressInput.text;
-            
-            // Set connection data
-            var transport = networkManager.GetComponent<Unity.Netcode.Transports.UTP.UnityTransport>();
-            if (transport != null)
-            {
-                transport.SetConnectionData(ipAddress, 7777); // Default port 7777
-            }
-            
-            networkManager.StartClient();
-            
-            // Show class selection
             ShowClassSelection();
             
             UpdatePlayerCount();
+            
+            Debug.Log($"✅ Attempting to join lobby: {joinCode}");
         }
     }
     
@@ -295,7 +278,6 @@ public class NetworkLobbyManager : MonoBehaviour
         }
         
         return new string(code);
-    }
     }
     
     void UpdatePlayerCount()

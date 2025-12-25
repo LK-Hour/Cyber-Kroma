@@ -474,6 +474,9 @@ GameObject:
   - component: {fileID: 6639698038374408069}
   - component: {fileID: 7204895752917303147}
   - component: {fileID: 8524157939226320109}
+  - component: {fileID: -3326387863777184308}
+  - component: {fileID: -7778665240909119386}
+  - component: {fileID: -7968901068193399985}
   m_Layer: 0
   m_Name: Space_Soldier_A
   m_TagString: Untagged
@@ -560,14 +563,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10a86b2fb9e7aaeae974a82733027583, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  moveJoystick: {fileID: 0}
+  touchField: {fileID: 0}
   playerCamera: {fileID: 7237205112712376160}
-  mouseSensitivity: 2
+  lookSensitivity: 0.2
   lookXLimit: 90
-  holdClickToLook: 0
   cameraSmoothness: 15
   walkSpeed: 3
   runSpeed: 6
   gravity: 25
+  rollSpeed: 10
+  rollDuration: 0.8
   animator: {fileID: 9530324}
   canMove: 1
 --- !u!114 &6639698038374408069
@@ -606,6 +612,7 @@ MonoBehaviour:
   range: 100
   fireRate: 0.15
   maxAmmo: 30
+  currentAmmo: 0
 --- !u!114 &8524157939226320109
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -618,6 +625,81 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 413c998847960ccd1bc2c57482d2e468, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxHealth: 100
+  respawnDelay: 5
+  respawnPoint: {fileID: 0}
+  animator: {fileID: 0}
+  movementScript: {fileID: 0}
+  shootingScript: {fileID: 0}
+  characterController: {fileID: 0}
+--- !u!114 &-3326387863777184308
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 193908}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 465145659
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 1
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
+  SyncOwnerTransformWhenParented: 1
+  AllowOwnerToParent: 0
+--- !u!114 &-7778665240909119386
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 193908}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e96cb6065543e43c4a752faaa1468eb1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  UseUnreliableDeltas: 0
+  SyncPositionX: 1
+  SyncPositionY: 1
+  SyncPositionZ: 1
+  SyncRotAngleX: 1
+  SyncRotAngleY: 1
+  SyncRotAngleZ: 1
+  SyncScaleX: 1
+  SyncScaleY: 1
+  SyncScaleZ: 1
+  PositionThreshold: 0.001
+  RotAngleThreshold: 0.01
+  ScaleThreshold: 0.01
+  UseQuaternionSynchronization: 0
+  UseQuaternionCompression: 0
+  UseHalfFloatPrecision: 0
+  InLocalSpace: 0
+  Interpolate: 1
+  SlerpPosition: 0
+--- !u!114 &-7968901068193399985
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 193908}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8d0727d5ae3244e3b569694d3912374, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TransitionStateInfoList: []
+  m_Animator: {fileID: 0}
 --- !u!1 &198750
 GameObject:
   m_ObjectHideFlags: 0

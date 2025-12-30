@@ -51,5 +51,5 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "Cyber Kroma.sln"
+    "dotnet.defaultSolution": "Cyber-Kroma.sln"
 }

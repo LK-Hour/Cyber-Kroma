@@ -225,6 +225,38 @@ public class NetworkLobbyManager : MonoBehaviour
             Debug.Log($"✅ Attempting to join lobby: {joinCode}");
         }
     }
+    void OnHostClicked()
+{
+    Debug.Log("🏠 Hosting game...");
+
+    if (networkManager == null) return;
+
+    // Generate lobby code
+    currentLobbyCode = GenerateLobbyCode();
+
+    // Start as Host
+    networkManager.StartHost();
+
+    // Show lobby code
+    if (lobbyCodeText != null)
+    {
+        lobbyCodeText.gameObject.SetActive(true);
+        lobbyCodeText.text =
+            $"🔑 Lobby Code: <color=#FFD700>{currentLobbyCode}</color>\n<size=20>Share this code with your friends!</size>";
+        lobbyCodeText.alignment = TextAlignmentOptions.Center;
+    }
+
+    // Enable start game button
+    if (startGameButton != null)
+    {
+        startGameButton.interactable = true;
+    }
+
+    ShowClassSelection();
+    UpdatePlayerCount();
+}
+
+
     
     void OnStartGameClicked()
     {
@@ -255,7 +287,7 @@ public class NetworkLobbyManager : MonoBehaviour
         // This will sync the player's class choice across the network
     }
     
-    #endregion
+    // #endregion
     
     void ShowClassSelection()
     {
@@ -267,7 +299,7 @@ public class NetworkLobbyManager : MonoBehaviour
         // Disable host/join buttons after joining
         if (hostButton != null) hostButton.interactable = false;
         if (joinButton != null) joinButton.interactable = false;
-    
+    }
     /// <summary>
     /// Generate a random 6-character alphanumeric lobby code
     /// </summary>

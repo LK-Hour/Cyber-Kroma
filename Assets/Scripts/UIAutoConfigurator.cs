@@ -19,17 +19,18 @@ public class UIAutoConfigurator : MonoBehaviour
     /// </summary>
     void ConfigureAllUI()
     {
-        Debug.Log("🎨 Auto-configuring beautiful UI...");
+        Debug.Log("Auto-configuring beautiful UI...");
         
         ConfigureShopPanel();
         ConfigureEducationPanel();
         ConfigureVictoryPanel();
         ConfigureDefeatPanel();
+        ConfigurePauseMenu();
         ConfigureHUD();
         ConfigurePanelAnimations();
         DisablePopupPanels();
         
-        Debug.Log("✨ Beautiful UI configuration complete!");
+        Debug.Log("Beautiful UI configuration complete!");
     }
     
     #region Shop Panel Configuration
@@ -50,7 +51,7 @@ public class UIAutoConfigurator : MonoBehaviour
             TextMeshProUGUI titleText = shopTitle.GetComponent<TextMeshProUGUI>();
             if (titleText != null)
             {
-                titleText.text = "🛒 LOK TA SHOP";
+                titleText.text = "LOK TA SHOP";
                 titleText.fontSize = 56;
                 titleText.fontStyle = FontStyles.Bold;
                 titleText.alignment = TextAlignmentOptions.Center;
@@ -76,7 +77,7 @@ public class UIAutoConfigurator : MonoBehaviour
             TextMeshProUGUI text = recText.GetComponent<TextMeshProUGUI>();
             if (text != null)
             {
-                text.text = "💡 Choose wisely, defender!";
+                text.text = "Choose wisely, defender!";
                 text.fontSize = 28;
                 text.alignment = TextAlignmentOptions.Center;
                 text.color = new Color(0f, 0.9f, 1f); // Cyan
@@ -86,12 +87,12 @@ public class UIAutoConfigurator : MonoBehaviour
         }
         
         // Configure Buttons
-        ConfigureShopButton(shopPanel, "BtnHealth", "🏥 Restore Health (+50 HP)\n<size=24>50 Points</size>");
-        ConfigureShopButton(shopPanel, "BtnShield", "🛡️ Shield Boost (+100)\n<size=24>75 Points</size>");
-        ConfigureShopButton(shopPanel, "BtnAmmo", "🔫 Ammo Refill (+30)\n<size=24>30 Points</size>");
-        ConfigureShopButton(shopPanel, "BtnClose", "✖ Close", 32);
+        ConfigureShopButton(shopPanel, "BtnHealth", "Restore Health (+50 HP)\n<size=24>50 Points</size>");
+        ConfigureShopButton(shopPanel, "BtnShield", "Shield Boost (+100)\n<size=24>75 Points</size>");
+        ConfigureShopButton(shopPanel, "BtnAmmo", "Ammo Refill (+30)\n<size=24>30 Points</size>");
+        ConfigureShopButton(shopPanel, "BtnClose", "Close", 32);
         
-        Debug.Log("✅ Shop Panel configured");
+        Debug.Log("Shop Panel configured");
     }
     
     void ConfigureShopButton(GameObject panel, string buttonName, string text, float fontSize = 32)
@@ -280,6 +281,39 @@ public class UIAutoConfigurator : MonoBehaviour
         
         Debug.Log("✅ Defeat Panel configured");
     }
+    
+    void ConfigurePauseMenu()
+    {
+        GameObject pauseMenu = GameObject.Find("Canvas/PauseMenu");
+        if (pauseMenu == null) return;
+        
+        Transform title = pauseMenu.transform.Find("PauseTitle");
+        if (title != null)
+        {
+            TextMeshProUGUI titleText = title.GetComponent<TextMeshProUGUI>();
+            if (titleText != null)
+            {
+                titleText.text = "⏸️ PAUSED";
+                titleText.fontSize = 72;
+                titleText.fontStyle = FontStyles.Bold;
+                titleText.alignment = TextAlignmentOptions.Center;
+                
+                // Pause gradient (Blue → Cyan)
+                titleText.enableVertexGradient = true;
+                titleText.colorGradient = new VertexGradient(
+                    new Color(0.2f, 0.6f, 1f),    // Blue top
+                    new Color(0.2f, 0.6f, 1f),    // Blue top
+                    new Color(0f, 1f, 1f),        // Cyan bottom
+                    new Color(0f, 1f, 1f)         // Cyan bottom
+                );
+                
+                titleText.outlineWidth = 0.3f;
+                titleText.outlineColor = new Color(0, 0, 0, 1f);
+            }
+        }
+        
+        Debug.Log("✅ Pause Menu configured");
+    }
     #endregion
     
     #region HUD Configuration
@@ -432,6 +466,7 @@ public class UIAutoConfigurator : MonoBehaviour
         DisablePanel("Canvas/EducationPanel");
         DisablePanel("Canvas/VictoryPanel");
         DisablePanel("Canvas/DefeatPanel");
+        DisablePanel("Canvas/PauseMenu");
         
         Debug.Log("✅ Popup panels disabled");
     }

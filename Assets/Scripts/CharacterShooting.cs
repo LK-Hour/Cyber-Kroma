@@ -78,8 +78,8 @@ public class CharacterShooting : MonoBehaviour
         if (Physics.Raycast(playerCamera.transform.position, playerCamera.transform.forward, out hit, range))
         {
             targetPoint = hit.point;
-            EnemyController enemy = hit.transform.GetComponent<EnemyController>();
-            if (enemy != null) enemy.TakeDamage(damage);
+            EnemyAI enemy = hit.transform.GetComponent<EnemyAI>();
+            if (enemy != null) enemy.TakeDamage((int)damage);
         }
         else
         {

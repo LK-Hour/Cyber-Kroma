@@ -2,6 +2,13 @@ using UnityEngine;
 using Unity.Netcode;
 using TMPro;
 using UnityEngine.UI;
+using Unity.Services.Core;
+using Unity.Services.Authentication;
+using Unity.Services.Relay;
+using Unity.Services.Relay.Models;
+using Unity.Netcode.Transports.UTP;
+using System.Threading.Tasks;
+using System;
 
 /// <summary>
 /// Network Lobby Manager - Handles multiplayer lobby for up to 4 players
@@ -34,13 +41,24 @@ public class NetworkLobbyManager : MonoBehaviour
     
     [Header("Settings")]
     public int maxPlayers = 4;
-    public string gameplayScene = "Scene_Level_Design";
+    public string gameplayScene = "Scene_Combat_Test"; // Change this to your main gameplay scene
+    public bool useRelay = false; // Toggle between Relay and local network
+    public ushort localPort = 7777;
+    
+    [Header("Player Prefabs")]
+    public GameObject firewallPrefab;   // High defense tank
+    public GameObject debuggerPrefab;   // High damage DPS
+    public GameObject scannerPrefab;    // Detection specialist
     
     private NetworkManager networkManager;
     private string selectedClass = "Firewall"; // Default class
     private string currentLobbyCode = "";
+    private bool isInitialized = false;
     
-    void Start()
+    // Store player class choices (NetworkVariable would be better for multiplayer)
+    private static string localPlayerClass = "Firewall";
+    
+    async void Start()
     {
         networkManager = NetworkManager.Singleton;
         
@@ -50,8 +68,104 @@ public class NetworkLobbyManager : MonoBehaviour
             return;
         }
         
+        // Only initialize Unity Services if using Relay
+        if (useRelay)
+        {
+            await InitializeUnityServices();
+        }
+        else
+        {
+            isInitialized = true; // Skip Unity Services for local network
+            Debug.Log("Using local network mode (no Unity Services needed)");
+        }
+        
+        // Auto-find UI elements if not assigned
+        AutoFindUIElements();
+        
         SetupUI();
         SetupButtons();
+    }
+    
+    async Task InitializeUnityServices()
+    {
+        try
+        {
+            if (statusText != null)
+            {
+                statusText.text = "Initializing services...";
+            }
+            
+            Debug.Log("Starting Unity Services initialization...");
+            
+            if (UnityServices.State == ServicesInitializationState.Uninitialized)
+            {
+                await UnityServices.InitializeAsync();
+                Debug.Log("Unity Services initialized");
+            }
+            
+            if (!AuthenticationService.Instance.IsSignedIn)
+            {
+                await AuthenticationService.Instance.SignInAnonymouslyAsync();
+                Debug.Log($"Signed in as: {AuthenticationService.Instance.PlayerId}");
+            }
+            
+            isInitialized = true;
+            
+            if (statusText != null)
+            {
+                statusText.text = "Ready to host or join";
+            }
+            
+            Debug.Log("Unity Services ready for Relay");
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"Failed to initialize Unity Services: {e.Message}\n{e.StackTrace}");
+            isInitialized = false;
+            
+            if (statusText != null)
+            {
+                statusText.text = $"<color=#FF0000>Init failed: {e.Message}</color>";
+            }
+        }
+    }
+    
+    void AutoFindUIElements()
+    {
+        // Auto-find class selection buttons by name
+        if (firewallButton == null)
+        {
+            GameObject btn = GameObject.Find("Btn_Firewall");
+            if (btn != null) firewallButton = btn.GetComponent<Button>();
+        }
+        
+        if (debuggerButton == null)
+        {
+            GameObject btn = GameObject.Find("Btn_Debugger");
+            if (btn != null) debuggerButton = btn.GetComponent<Button>();
+        }
+        
+        if (scannerButton == null)
+        {
+            GameObject btn = GameObject.Find("Btn_Scanner");
+            if (btn != null) scannerButton = btn.GetComponent<Button>();
+        }
+        
+        // Auto-find panels
+        if (classSelectionPanel == null)
+        {
+            GameObject panel = GameObject.Find("ClassSelectionPanel");
+            if (panel != null) classSelectionPanel = panel;
+        }
+        
+        // Auto-find selected class text
+        if (selectedClassText == null)
+        {
+            GameObject textObj = GameObject.Find("SelectedClassText");
+            if (textObj != null) selectedClassText = textObj.GetComponent<TextMeshProUGUI>();
+        }
+        
+        Debug.Log($"Auto-find results: Firewall={firewallButton != null}, Debugger={debuggerButton != null}, Scanner={scannerButton != null}");
     }
     
     void SetupUI()
@@ -113,8 +227,8 @@ public class NetworkLobbyManager : MonoBehaviour
             TextMeshProUGUI btnText = hostButton.GetComponentInChildren<TextMeshProUGUI>();
             if (btnText != null)
             {
-                btnText.text = "🏠 HOST GAME";
-                btnText.fontSize = 15;
+                btnText.text = "HOST GAME";
+                btnText.fontSize = 45;
             }
         }
         
@@ -128,7 +242,7 @@ public class NetworkLobbyManager : MonoBehaviour
             if (btnText != null)
             {
                 btnText.text = "🔗 JOIN GAME";
-                btnText.fontSize = 15;
+                btnText.fontSize = 45;
             }
         }
         
@@ -136,82 +250,159 @@ public class NetworkLobbyManager : MonoBehaviour
         if (startGameButton != null)
         {
             startGameButton.onClick.RemoveAllListeners();
-            startGameButton.onClick.AddListener(OnStartGameClicked);
+            startGameButton.onClick.AddListener(() => {
+                Debug.Log("START GAME BUTTON CLICKED!");
+                OnStartGameClicked();
+            });
             
             TextMeshProUGUI btnText = startGameButton.GetComponentInChildren<TextMeshProUGUI>();
             if (btnText != null)
             {
-                btnText.text = "🚀 START GAME";
-                btnText.fontSize = 15;
+                btnText.text = "START GAME";
+                btnText.fontSize = 45;
             }
+            
+            Debug.Log("Start Game button onClick listener added");
         }
         
         // Class Selection Buttons
-        SetupClassButton(firewallButton, "Firewall", "🛡️ FIREWALL\n<size=15>High Defense</size>");
-        SetupClassButton(debuggerButton, "Debugger", "🔧 DEBUGGER\n<size=15>High Damage</size>");
-        SetupClassButton(scannerButton, "Scanner", "🔍 SCANNER\n<size=15>Detect Stealth</size>");
+        SetupClassButton(firewallButton, "Firewall", "FIREWALL\n<size=45>High Defense</size>");
+        SetupClassButton(debuggerButton, "Debugger", "DEBUGGER\n<size=45>High Damage</size>");
+        SetupClassButton(scannerButton, "Scanner", "SCANNER\n<size=45>Detect Stealth</size>");
     }
     
     void SetupClassButton(Button button, string className, string displayText)
     {
-        if (button == null) return;
+        if (button == null)
+        {
+            Debug.LogWarning($"⚠️ {className} button is null! Cannot setup.");
+            return;
+        }
         
         button.onClick.RemoveAllListeners();
-        button.onClick.AddListener(() => OnClassSelected(className));
+        button.onClick.AddListener(() => {
+            Debug.Log($"Button clicked: {className}");
+            OnClassSelected(className);
+        });
         
         TextMeshProUGUI btnText = button.GetComponentInChildren<TextMeshProUGUI>();
         if (btnText != null)
         {
             btnText.text = displayText;
-            btnText.fontSize = 15;
+            btnText.fontSize = 45;
         }
+        
+        Debug.Log($"{className} button setup complete");
     }
     
-    void OnHostClicked()
+    async void OnHostClicked()
     {
-        Debug.Log("🏠 Hosting game...");
+        if (useRelay && !isInitialized)
+        {
+            Debug.LogError("Unity Services not initialized!");
+            if (statusText != null)
+            {
+                statusText.text = "<color=#FF0000>Services not ready!</color>";
+            }
+            return;
+        }
+        
+        Debug.Log("Hosting game...");
         
         if (networkManager != null)
         {
-            // Generate unique lobby code
-            currentLobbyCode = GenerateLobbyCode();
-            
-            networkManager.StartHost();
-            
-            // Display lobby code PROMINENTLY for others to join
-            if (lobbyCodeText != null)
+            try
             {
-                lobbyCodeText.gameObject.SetActive(true);
-                lobbyCodeText.text = $"🔑 LOBBY CODE:\n<size=64><color=#FFD700>{currentLobbyCode}</color></size>\n<size=24>Share this with friends!</size>";
-                lobbyCodeText.fontSize = 32;
-                lobbyCodeText.alignment = TextAlignmentOptions.Center;
+                if (useRelay)
+                {
+                    // Use Unity Relay
+                    Allocation allocation = await RelayService.Instance.CreateAllocationAsync(maxPlayers - 1);
+                    currentLobbyCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
+                    
+                    var transport = networkManager.GetComponent<UnityTransport>();
+                    if (transport != null)
+                    {
+                        transport.SetHostRelayData(
+                            allocation.RelayServer.IpV4,
+                            (ushort)allocation.RelayServer.Port,
+                            allocation.AllocationIdBytes,
+                            allocation.Key,
+                            allocation.ConnectionData
+                        );
+                    }
+                }
+                else
+                {
+                    // Use local network
+                    currentLobbyCode = GenerateLobbyCode();
+                    var transport = networkManager.GetComponent<UnityTransport>();
+                    if (transport != null)
+                    {
+                        transport.SetConnectionData("127.0.0.1", localPort);
+                    }
+                }
+                
+                // Start host
+                networkManager.StartHost();
+                
+                // Display lobby code
+                if (lobbyCodeText != null)
+                {
+                    lobbyCodeText.gameObject.SetActive(true);
+                    lobbyCodeText.text = $"LOBBY CODE:\n<size=64><color=#FFD700>{currentLobbyCode}</color></size>\n<size=24>Share this with friends!</size>";
+                    lobbyCodeText.fontSize = 32;
+                    lobbyCodeText.alignment = TextAlignmentOptions.Center;
+                }
+                
+                // Update status
+                if (statusText != null)
+                {
+                    statusText.text = "<color=#00FF00>Hosting! Waiting for players...</color>";
+                    statusText.fontSize = 40;
+                }
+                
+                // Enable start button for host
+                if (startGameButton != null)
+                {
+                    startGameButton.interactable = true;
+                    Debug.Log("Start Game button ENABLED for host");
+                }
+                else
+                {
+                    Debug.LogError("Start Game button is NULL! Assign it in Inspector.");
+                }
+                
+                // Show class selection
+                ShowClassSelection();
+                
+                UpdatePlayerCount();
+                
+                Debug.Log($"Lobby created! Code: {currentLobbyCode} (Relay: {useRelay})");
             }
-            
-            // Update status
-            if (statusText != null)
+            catch (Exception e)
             {
-                statusText.text = "<color=#00FF00>✅ Hosting! Waiting for players...</color>";
-                statusText.fontSize = 28;
+                Debug.LogError($"Failed to create lobby: {e}");
+                if (statusText != null)
+                {
+                    statusText.text = "<color=#FF0000>Failed to create lobby!</color>";
+                }
             }
-            
-            // Enable start button for host
-            if (startGameButton != null)
-            {
-                startGameButton.interactable = true;
-            }
-            
-            // Show class selection
-            ShowClassSelection();
-            
-            UpdatePlayerCount();
-            
-            Debug.Log($"✅ Lobby created! Code: {currentLobbyCode}");
         }
     }
     
-    void OnJoinClicked()
+    async void OnJoinClicked()
     {
-        Debug.Log("🔗 Joining game...");
+        if (useRelay && !isInitialized)
+        {
+            Debug.LogError("Unity Services not initialized!");
+            if (statusText != null)
+            {
+                statusText.text = "<color=#FF0000>Services not ready!</color>";
+            }
+            return;
+        }
+        
+        Debug.Log("Joining game...");
         
         if (networkManager != null && joinCodeInput != null)
         {
@@ -220,21 +411,21 @@ public class NetworkLobbyManager : MonoBehaviour
             
             if (string.IsNullOrEmpty(joinCode))
             {
-                Debug.LogWarning("❌ Please enter a join code!");
+                Debug.LogWarning("Please enter a join code!");
                 if (statusText != null)
                 {
-                    statusText.text = "<color=#FF0000>❌ Please enter a join code!</color>";
+                    statusText.text = "<color=#FF0000>Please enter a join code!</color>";
                 }
                 return;
             }
             
-            // Validate join code (6 characters, alphanumeric)
+            // Validate join code (6 characters for both relay and local)
             if (joinCode.Length != 6)
             {
-                Debug.LogWarning("❌ Join code must be 6 characters!");
+                Debug.LogWarning("Join code must be 6 characters!");
                 if (statusText != null)
                 {
-                    statusText.text = "<color=#FF0000>❌ Code must be 6 characters!</color>";
+                    statusText.text = "<color=#FF0000>Code must be 6 characters!</color>";
                 }
                 return;
             }
@@ -242,43 +433,76 @@ public class NetworkLobbyManager : MonoBehaviour
             // Update status
             if (statusText != null)
             {
-                statusText.text = $"<color=#FFFF00>🔗 Joining lobby: {joinCode}...</color>";
+                statusText.text = $"<color=#FFFF00>Joining lobby: {joinCode}...</color>";
             }
             
-            // For local network testing, we use localhost
-            // In production, this would query a relay/matchmaking server with the code
-            string ipAddress = "127.0.0.1"; // Local network for now
-            
-            // Set connection data
-            var transport = networkManager.GetComponent<Unity.Netcode.Transports.UTP.UnityTransport>();
-            if (transport != null)
+            try
             {
-                transport.SetConnectionData(ipAddress, 7777);
+                if (useRelay)
+                {
+                    // Join via Unity Relay
+                    JoinAllocation allocation = await RelayService.Instance.JoinAllocationAsync(joinCode);
+                    
+                    var transport = networkManager.GetComponent<UnityTransport>();
+                    if (transport != null)
+                    {
+                        transport.SetClientRelayData(
+                            allocation.RelayServer.IpV4,
+                            (ushort)allocation.RelayServer.Port,
+                            allocation.AllocationIdBytes,
+                            allocation.Key,
+                            allocation.ConnectionData,
+                            allocation.HostConnectionData
+                        );
+                    }
+                }
+                else
+                {
+                    // Join via local network
+                    var transport = networkManager.GetComponent<UnityTransport>();
+                    if (transport != null)
+                    {
+                        transport.SetConnectionData("127.0.0.1", localPort);
+                    }
+                }
+                
+                // Start client
+                networkManager.StartClient();
+                
+                // Show class selection
+                ShowClassSelection();
+                
+                // Update status
+                if (statusText != null)
+                {
+                    statusText.text = $"<color=#00FF00>Joined lobby: {joinCode}</color>";
+                }
+                
+                Debug.Log($"Successfully joined lobby: {joinCode} (Relay: {useRelay})");
             }
-            
-            networkManager.StartClient();
-            
-            // Show class selection
-            ShowClassSelection();
-            
-            // Update status on successful connection
-            if (statusText != null)
+            catch (Exception e)
             {
-                statusText.text = $"<color=#00FF00>✅ Joined lobby: {joinCode}</color>";
+                Debug.LogError($"Failed to join lobby: {e}");
+                if (statusText != null)
+                {
+                    statusText.text = $"<color=#FF0000>Failed to join: {e.Message}</color>";
+                }
             }
-            
-            UpdatePlayerCount();
-            
-            Debug.Log($"✅ Attempting to join lobby: {joinCode}");
         }
     }
     
     void OnStartGameClicked()
     {
-        Debug.Log("🚀 Starting game...");
+        Debug.Log("Starting game...");
         
         if (networkManager != null && networkManager.IsHost)
         {
+            // Save the selected class for the game scene
+            PlayerPrefs.SetString("SelectedClass", selectedClass);
+            PlayerPrefs.Save();
+            
+            Debug.Log($"Saved class selection: {selectedClass}");
+            
             // Load gameplay scene for all clients
             networkManager.SceneManager.LoadScene(gameplayScene, UnityEngine.SceneManagement.LoadSceneMode.Single);
         }
@@ -288,18 +512,91 @@ public class NetworkLobbyManager : MonoBehaviour
         }
     }
     
+    /// <summary>
+    /// Get the player's selected class (called from game scene)
+    /// </summary>
+    public static string GetSelectedClass()
+    {
+        return PlayerPrefs.GetString("SelectedClass", "Firewall");
+    }
+    
     void OnClassSelected(string className)
     {
         selectedClass = className;
-        Debug.Log($"✅ Selected class: {className}");
+        localPlayerClass = className; // Save for when game starts
         
+        Debug.Log($"Selected class: {className}");
+        
+        // Update selected class text
         if (selectedClassText != null)
         {
             selectedClassText.text = $"Selected: <color=#FFD700>{className}</color>";
+            selectedClassText.fontSize = 36;
         }
         
-        // TODO: Send class selection to server via RPC
-        // This will sync the player's class choice across the network
+        // Visual feedback - highlight selected button
+        HighlightSelectedButton(className);
+        
+        // Show class description
+        ShowClassDescription(className);
+        
+        Debug.Log($"Character selected: {className} - Will spawn when game starts!");
+    }
+    
+    void ShowClassDescription(string className)
+    {
+        string description = "";
+        
+        switch (className)
+        {
+            case "Firewall":
+                description = "FIREWALL\n• High Defense\n• Protects Data Core\n• Absorbs virus attacks";
+                break;
+            case "Debugger":
+                description = "🔧 DEBUGGER\n• High Damage\n• Eliminates threats\n• Fast fire rate";
+                break;
+            case "Scanner":
+                description = "SCANNER\n• Detects stealth\n• Reveals hidden viruses\n• Support role";
+                break;
+        }
+        
+        if (statusText != null)
+        {
+            statusText.text = description;
+            statusText.fontSize = 24;
+        }
+    }
+    
+    void HighlightSelectedButton(string className)
+    {
+        // Reset all button colors
+        ResetButtonColor(firewallButton);
+        ResetButtonColor(debuggerButton);
+        ResetButtonColor(scannerButton);
+        
+        // Highlight selected button
+        Button selectedButton = null;
+        if (className == "Firewall") selectedButton = firewallButton;
+        else if (className == "Debugger") selectedButton = debuggerButton;
+        else if (className == "Scanner") selectedButton = scannerButton;
+        
+        if (selectedButton != null)
+        {
+            var colors = selectedButton.colors;
+            colors.normalColor = new Color(1f, 0.84f, 0f, 1f); // Gold
+            colors.selectedColor = new Color(1f, 0.84f, 0f, 1f);
+            selectedButton.colors = colors;
+        }
+    }
+    
+    void ResetButtonColor(Button button)
+    {
+        if (button == null) return;
+        
+        var colors = button.colors;
+        colors.normalColor = Color.white;
+        colors.selectedColor = Color.white;
+        button.colors = colors;
     }
     
     void ShowClassSelection()
@@ -333,7 +630,8 @@ public class NetworkLobbyManager : MonoBehaviour
     
     void UpdatePlayerCount()
     {
-        if (playerCountText != null && networkManager != null)
+        // Only server/host can access ConnectedClients
+        if (playerCountText != null && networkManager != null && networkManager.IsServer)
         {
             int connectedPlayers = networkManager.ConnectedClients.Count;
             playerCountText.text = $"Players: {connectedPlayers}/{maxPlayers}";
@@ -356,8 +654,8 @@ public class NetworkLobbyManager : MonoBehaviour
     
     void Update()
     {
-        // Continuously update player count
-        if (networkManager != null && networkManager.IsListening)
+        // Continuously update player count (only on server)
+        if (networkManager != null && networkManager.IsListening && networkManager.IsServer)
         {
             UpdatePlayerCount();
         }

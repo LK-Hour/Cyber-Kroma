@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using Unity.AI.Navigation;
+using UnityEngine.EventSystems;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -51,7 +52,10 @@ public class CombatSceneSetup : MonoBehaviour
         // Step 5: Setup NavMesh
         SetupNavMesh();
 
-        // Step 6: Verify player
+        // Step 6: Create player
+        SetupPlayer();
+
+        // Step 7: Verify player
         VerifyPlayer();
 
         Debug.Log("=== COMBAT SCENE SETUP COMPLETE ===");
@@ -127,7 +131,20 @@ public class CombatSceneSetup : MonoBehaviour
             {
                 spawnPoint = new GameObject(spawnName);
                 spawnPoint.transform.parent = spawnPointsParent.transform;
-                spawnPoint.transform.position = spawnPositions[i];
+
+                // Sample NavMesh to find valid position
+                UnityEngine.AI.NavMeshHit hit;
+                Vector3 spawnPos = spawnPositions[i];
+                if (UnityEngine.AI.NavMesh.SamplePosition(spawnPos, out hit, 10f, UnityEngine.AI.NavMesh.AllAreas))
+                {
+                    spawnPoint.transform.position = hit.position;
+                    Debug.Log($"  - Created {spawnName} at NavMesh position {hit.position} (original: {spawnPos})");
+                }
+                else
+                {
+                    spawnPoint.transform.position = spawnPos;
+                    Debug.LogWarning($"  - Created {spawnName} at {spawnPos} (not on NavMesh - NavMeshAgent may fail)");
+                }
 
                 // Add visual marker
                 GameObject marker = GameObject.CreatePrimitive(PrimitiveType.Sphere);
@@ -136,8 +153,6 @@ public class CombatSceneSetup : MonoBehaviour
                 marker.transform.localScale = Vector3.one * 0.5f;
                 marker.GetComponent<Renderer>().material.color = Color.red;
                 Destroy(marker.GetComponent<Collider>()); // Remove collider
-
-                Debug.Log($"  - Created {spawnName} at {spawnPositions[i]}");
             }
         }
     }
@@ -163,6 +178,12 @@ public class CombatSceneSetup : MonoBehaviour
         Debug.Log($"  - Loaded GhostAccount: {(ghost != null ? "OK" : "MISSING")}");
         Debug.Log($"  - Loaded DeepFake: {(deepFake != null ? "OK" : "MISSING")}");
 
+        // Assign enemy prefabs to WaveManager
+        waveManager.enemyPrefabs = new GameObject[3];
+        if (phisher != null) waveManager.enemyPrefabs[0] = phisher;
+        if (ghost != null) waveManager.enemyPrefabs[1] = ghost;
+        if (deepFake != null) waveManager.enemyPrefabs[2] = deepFake;
+
         // Find spawn points
         GameObject[] spawnPointObjs = GameObject.FindGameObjectsWithTag("Untagged");
         Transform[] spawnPoints = new Transform[5];
@@ -172,8 +193,10 @@ public class CombatSceneSetup : MonoBehaviour
             if (sp != null) spawnPoints[i] = sp.transform;
         }
 
-        Debug.Log("  - WaveManager configured (assign enemy prefabs manually in Inspector)");
-        Debug.Log("  - Assign spawn points array in Inspector");
+        // Assign spawn points to WaveManager
+        waveManager.spawnPoints = spawnPoints;
+
+        Debug.Log("  - WaveManager configured with enemy prefabs and spawn points");
     }
 
     private void SetupCombatUI()
@@ -208,6 +231,11 @@ public class CombatSceneSetup : MonoBehaviour
         CreateUIText(combatUIObj.transform, "KillsText", new Vector2(700, 400), "KILLS: 0");
         CreateUIText(combatUIObj.transform, "PointsText", new Vector2(700, 350), "POINTS: 0");
 
+        // Create control buttons
+        CreateUIButton(combatUIObj.transform, "Btn_Shoot", new Vector2(0, -400), "SHOOT");
+        CreateUIButton(combatUIObj.transform, "Btn_Reload", new Vector2(200, -400), "RELOAD");
+        CreateUIButton(combatUIObj.transform, "Btn_Roll", new Vector2(-200, -400), "ROLL");
+
         // Add CombatSceneUI component
         if (combatUIObj.GetComponent<CombatSceneUI>() == null)
         {
@@ -215,11 +243,16 @@ public class CombatSceneSetup : MonoBehaviour
             Debug.Log("  - Added CombatSceneUI component");
         }
 
+        // Add ButtonConnector to player (will be created later)
+        // This will be handled when player is created
+
         // Create panels
         CreatePanel(canvas.transform, "VictoryPanel", "VICTORY!");
         CreatePanel(canvas.transform, "DefeatPanel", "DEFEAT");
+        CreatePanel(canvas.transform, "ShopPanel", "SHOP");
+        CreatePanel(canvas.transform, "PauseMenu", "PAUSED");
 
-        Debug.Log("  - UI elements created (assign references in CombatSceneUI)");
+        Debug.Log("  - UI elements and buttons created");
     }
 
     private void CreateUIText(Transform parent, string name, Vector2 position, string text)
@@ -236,6 +269,45 @@ public class CombatSceneSetup : MonoBehaviour
         tmp.fontSize = 24;
         tmp.color = Color.white;
         tmp.alignment = TextAlignmentOptions.Left;
+    }
+
+    private void CreateUIButton(Transform parent, string name, Vector2 position, string text)
+    {
+        GameObject buttonObj = new GameObject(name);
+        buttonObj.transform.SetParent(parent, false);
+
+        RectTransform rt = buttonObj.AddComponent<RectTransform>();
+        rt.anchoredPosition = position;
+        rt.sizeDelta = new Vector2(150, 60);
+
+        Image img = buttonObj.AddComponent<Image>();
+        img.color = new Color(0.2f, 0.6f, 1f); // Blue button
+
+        UnityEngine.UI.Button btn = buttonObj.AddComponent<UnityEngine.UI.Button>();
+        ColorBlock colors = btn.colors;
+        colors.highlightedColor = new Color(0.3f, 0.7f, 1.2f);
+        colors.pressedColor = new Color(0.1f, 0.5f, 0.9f);
+        btn.colors = colors;
+
+        // Button text
+        GameObject textObj = new GameObject("Text");
+        textObj.transform.SetParent(buttonObj.transform, false);
+        TextMeshProUGUI tmp = textObj.AddComponent<TextMeshProUGUI>();
+        tmp.text = text;
+        tmp.fontSize = 20;
+        tmp.color = Color.white;
+        tmp.alignment = TextAlignmentOptions.Center;
+
+        RectTransform textRT = textObj.GetComponent<RectTransform>();
+        textRT.anchorMin = Vector2.zero;
+        textRT.anchorMax = Vector2.one;
+        textRT.sizeDelta = Vector2.zero;
+
+        // Add EventTrigger for shoot button
+        if (name == "Btn_Shoot")
+        {
+            buttonObj.AddComponent<EventTrigger>();
+        }
     }
 
     private void CreatePanel(Transform parent, string name, string titleText)
@@ -290,6 +362,90 @@ public class CombatSceneSetup : MonoBehaviour
             {
                 Debug.Log("  - NavMeshSurface already exists");
             }
+        }
+    }
+
+    private void SetupPlayer()
+    {
+        Debug.Log("[6/7] Setting up Player...");
+
+        player = GameObject.FindGameObjectWithTag("Player");
+        if (player == null)
+        {
+            // Create new Player
+            player = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+            player.name = "Player";
+            player.tag = "Player";
+            player.transform.position = new Vector3(0, 1, -10);
+            player.transform.localScale = new Vector3(1, 2, 1);
+
+            // Add CharacterController for movement
+            var controller = player.AddComponent<CharacterController>();
+            controller.height = 2f;
+            controller.radius = 0.5f;
+            controller.center = new Vector3(0, 1, 0);
+
+            // Add required components
+            if (player.GetComponent<CharacterHealth>() == null)
+            {
+                var health = player.AddComponent<CharacterHealth>();
+                Debug.Log("  - Added CharacterHealth component");
+            }
+
+            if (player.GetComponent<CharacterShooting>() == null)
+            {
+                var shooting = player.AddComponent<CharacterShooting>();
+                Debug.Log("  - Added CharacterShooting component");
+            }
+
+            if (player.GetComponent<CharacterMovement>() == null)
+            {
+                var movement = player.AddComponent<CharacterMovement>();
+                Debug.Log("  - Added CharacterMovement component");
+            }
+
+            // Add camera
+            GameObject cameraObj = new GameObject("Main Camera");
+            cameraObj.transform.SetParent(player.transform);
+            cameraObj.transform.localPosition = new Vector3(0, 1.6f, 0);
+            var camera = cameraObj.AddComponent<Camera>();
+            camera.tag = "MainCamera";
+
+            // Add audio listener
+            cameraObj.AddComponent<AudioListener>();
+
+            // Setup CharacterShooting references
+            var shootingComp = player.GetComponent<CharacterShooting>();
+            shootingComp.playerCamera = camera;
+            shootingComp.firePoint = cameraObj.transform;
+
+            // Create bullet trail prefab if it doesn't exist
+            GameObject bulletTrail = GameObject.Find("BulletTrail");
+            if (bulletTrail == null)
+            {
+                bulletTrail = new GameObject("BulletTrail");
+                var lineRenderer = bulletTrail.AddComponent<LineRenderer>();
+                lineRenderer.material = new Material(Shader.Find("Sprites/Default"));
+                lineRenderer.startColor = Color.yellow;
+                lineRenderer.endColor = Color.red;
+                lineRenderer.startWidth = 0.05f;
+                lineRenderer.endWidth = 0.05f;
+                bulletTrail.SetActive(false); // Make it a prefab
+            }
+            shootingComp.bulletTrailPrefab = bulletTrail.GetComponent<LineRenderer>();
+
+            // Add ButtonConnector for UI controls
+            if (player.GetComponent<ButtonConnector>() == null)
+            {
+                player.AddComponent<ButtonConnector>();
+                Debug.Log("  - Added ButtonConnector component");
+            }
+
+            Debug.Log("  - Created Player with all components at (0, 1, -10)");
+        }
+        else
+        {
+            Debug.Log("  - Player already exists");
         }
     }
 

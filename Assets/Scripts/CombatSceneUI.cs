@@ -22,6 +22,8 @@ public class CombatSceneUI : MonoBehaviour
     public GameObject victoryPanel;
     public GameObject defeatPanel;
     public GameObject pauseMenu;
+    public GameObject shopPanel;
+    public GameObject educationPanel;
     
     private int totalKills = 0;
     private CharacterHealth playerHealth;
@@ -37,10 +39,19 @@ public class CombatSceneUI : MonoBehaviour
             playerShooting = player.GetComponent<CharacterShooting>();
         }
         
+        // Auto-find panels if not assigned
+        if (victoryPanel == null) victoryPanel = GameObject.Find("Canvas/VictoryPanel");
+        if (defeatPanel == null) defeatPanel = GameObject.Find("Canvas/DefeatPanel");
+        if (pauseMenu == null) pauseMenu = GameObject.Find("Canvas/PauseMenu");
+        if (shopPanel == null) shopPanel = GameObject.Find("Canvas/ShopPanel");
+        if (educationPanel == null) educationPanel = GameObject.Find("Canvas/EducationPanel");
+        
         // Hide end game panels
         if (victoryPanel != null) victoryPanel.SetActive(false);
         if (defeatPanel != null) defeatPanel.SetActive(false);
         if (pauseMenu != null) pauseMenu.SetActive(false);
+        if (shopPanel != null) shopPanel.SetActive(false);
+        if (educationPanel != null) educationPanel.SetActive(false);
         
         UpdateAllUI();
     }

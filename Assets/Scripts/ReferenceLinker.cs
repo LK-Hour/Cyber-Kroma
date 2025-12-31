@@ -28,7 +28,7 @@ public class ReferenceLinker : MonoBehaviour
         LinkDataCoreHealthReferences();
         SetPlayerTag();
         
-        Debug.Log("✅ All references linked successfully!");
+        Debug.Log("All references linked successfully!");
         
         // Disable this script after running once
         this.enabled = false;
@@ -94,7 +94,7 @@ public class ReferenceLinker : MonoBehaviour
         if (waveText != null) waveManager.waveText = waveText.GetComponent<TextMeshProUGUI>();
         if (enemyCountText != null) waveManager.enemyCountText = enemyCountText.GetComponent<TextMeshProUGUI>();
         
-        Debug.Log("✅ WaveManager references linked");
+        Debug.Log("WaveManager references linked");
     }
     #endregion
     
@@ -143,7 +143,7 @@ public class ReferenceLinker : MonoBehaviour
         
         // PlayerPoints is found via singleton in LokTaShop.Start()
         
-        Debug.Log("✅ LokTaShop references linked");
+        Debug.Log("LokTaShop references linked");
     }
     #endregion
     
@@ -182,7 +182,7 @@ public class ReferenceLinker : MonoBehaviour
         if (scamIcon != null) eduUI.iconImage = scamIcon.GetComponent<Image>();
         if (btnClose != null) eduUI.closeButton = btnClose.GetComponent<Button>();
         
-        Debug.Log("✅ ScamEducationUI references linked");
+        Debug.Log("ScamEducationUI references linked");
     }
     #endregion
     
@@ -210,7 +210,7 @@ public class ReferenceLinker : MonoBehaviour
             playerPoints.pointsText = pointsText.GetComponent<TextMeshProUGUI>();
         }
         
-        Debug.Log("✅ PlayerPoints references linked");
+        Debug.Log("PlayerPoints references linked");
     }
     #endregion
     
@@ -250,7 +250,7 @@ public class ReferenceLinker : MonoBehaviour
             Debug.LogWarning("DataCoreMaterial not found in Resources or Assets/Materials/");
         }
         
-        Debug.Log("✅ DataCoreHealth references linked");
+        Debug.Log("DataCoreHealth references linked");
     }
     #endregion
     
@@ -261,7 +261,7 @@ public class ReferenceLinker : MonoBehaviour
         if (player != null)
         {
             player.tag = "Player";
-            Debug.Log("✅ Player tag set to 'Player'");
+            Debug.Log("Player tag set to 'Player'");
         }
         else
         {

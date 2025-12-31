@@ -27,6 +27,8 @@ public class GameSceneManager : MonoBehaviour
     public string networkLobbyScene = "Scene_Network_Core";  // Multiplayer lobby
     public string gameplayScene = "Scene_Level_Design";      // Main gameplay
     public string combatTestScene = "Scene_Combat_Test";     // Testing only
+    public string aiTestScene = "Scene_AI_Test";             // AI/Wave testing
+    public string gameScene = "Game Scene";                  // Original game scene
     
     [Header("Transition Settings")]
     public float transitionDelay = 0.5f;
@@ -53,7 +55,7 @@ public class GameSceneManager : MonoBehaviour
     /// </summary>
     public void LoadMainMenu()
     {
-        Debug.Log("🎮 Loading Main Menu...");
+        Debug.Log("Loading Main Menu...");
         StartCoroutine(LoadSceneAsync(mainMenuScene));
     }
 
@@ -80,7 +82,7 @@ public class GameSceneManager : MonoBehaviour
     /// </summary>
     public void LoadGameplay()
     {
-        Debug.Log("⚔️ Loading Main Gameplay...");
+        Debug.Log("Loading Main Gameplay...");
         StartCoroutine(LoadSceneAsync(gameplayScene));
     }
     
@@ -91,6 +93,24 @@ public class GameSceneManager : MonoBehaviour
     {
         Debug.Log("🧪 Loading Combat Test Scene...");
         StartCoroutine(LoadSceneAsync(combatTestScene));
+    }
+
+    /// <summary>
+    /// Load AI Test scene (for wave system testing)
+    /// </summary>
+    public void LoadAITest()
+    {
+        Debug.Log("🤖 Loading AI Test Scene...");
+        StartCoroutine(LoadSceneAsync(aiTestScene));
+    }
+
+    /// <summary>
+    /// Load original Game Scene
+    /// </summary>
+    public void LoadGameScene()
+    {
+        Debug.Log("Loading Game Scene...");
+        StartCoroutine(LoadSceneAsync(gameScene));
     }
 
     /// <summary>
@@ -145,7 +165,7 @@ public class GameSceneManager : MonoBehaviour
             yield return null;
         }
 
-        Debug.Log($"✅ Scene '{sceneName}' loaded!");
+        Debug.Log($"Scene '{sceneName}' loaded!");
     }
 
     #endregion

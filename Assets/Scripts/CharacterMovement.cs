@@ -44,6 +44,18 @@ public class CharacterMovement : MonoBehaviour
     {
         characterController = GetComponent<CharacterController>();
         if (animator == null) animator = GetComponentInChildren<Animator>();
+        
+        // Auto-find TouchField if not assigned
+        if (touchField == null)
+        {
+            GameObject touchZone = GameObject.Find("TouchZone");
+            if (touchZone != null)
+            {
+                touchField = touchZone.GetComponent<TouchLook>();
+                Debug.Log("✅ TouchZone auto-assigned!");
+            }
+        }
+        
         targetRotationY = transform.eulerAngles.y;
     }
 

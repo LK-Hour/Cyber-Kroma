@@ -19,15 +19,15 @@ public class TutorialManager : MonoBehaviour
     [Header("Tutorial Steps")]
     public string[] tutorialSteps = new string[]
     {
-        "🎯 <b>OBJECTIVE</b>\n\nDefend the <color=#00E5FF>DATA CORE</color> from cyber threats!\nProtect Phnom Penh's digital infrastructure.",
+        "<b>OBJECTIVE</b>\n\nDefend the <color=#00E5FF>DATA CORE</color> from cyber threats!\nProtect Phnom Penh's digital infrastructure.",
         
-        "🎮 <b>CONTROLS</b>\n\n<b>WASD</b> - Move\n<b>Mouse</b> - Look Around\n<b>Left Click</b> - Shoot\n<b>R</b> - Reload",
+        "<b>CONTROLS</b>\n\n<b>WASD</b> - Move\n<b>Mouse</b> - Look Around\n<b>Left Click</b> - Shoot\n<b>R</b> - Reload",
         
-        "⚔️ <b>ENEMIES</b>\n\n<color=#FF00CC>🎣 Phisher</color> - Ranged attacker\n<color=#00E5FF>👻 Ghost Account</color> - Fast & stealthy\n<color=#FFD700>🤖 DeepFake</color> - Powerful tank",
+        "<b>ENEMIES</b>\n\n<color=#FF00CC>Phisher</color> - Ranged attacker\n<color=#00E5FF>Ghost Account</color> - Fast & stealthy\n<color=#FFD700>DeepFake</color> - Powerful tank",
         
-        "🛒 <b>LOK TA SHOP</b>\n\nEarn points by defeating enemies\nBuy upgrades between waves:\n💚 Health Potion\n🛡️ Shield Boost\n🔫 Ammo Refill",
+        "<b>LOK TA SHOP</b>\n\nEarn points by defeating enemies\nBuy upgrades between waves:\n- Health Potion\n- Shield Boost\n- Ammo Refill",
         
-        "✨ <b>READY?</b>\n\nDefend the Data Core!\nSurvive all waves to win!\n\nGood luck, Guardian! 🚀"
+        "<b>READY?</b>\n\nDefend the Data Core!\nSurvive all waves to win!\n\nGood luck, Guardian!"
     };
 
     private int currentStep = 0;
@@ -93,7 +93,7 @@ public class TutorialManager : MonoBehaviour
                 TextMeshProUGUI btnText = startGameButton.GetComponentInChildren<TextMeshProUGUI>();
                 if (btnText != null)
                 {
-                    btnText.text = "🚀 START GAME";
+                    btnText.text = "START GAME";
                     btnText.fontSize = 40;
                 }
             }
@@ -123,7 +123,7 @@ public class TutorialManager : MonoBehaviour
 
     void StartGame()
     {
-        Debug.Log("🚀 Starting game from tutorial...");
+        Debug.Log("Starting game from tutorial...");
         
         // Tutorial leads to Network Lobby (where players can host/join)
         if (GameSceneManager.Instance != null)

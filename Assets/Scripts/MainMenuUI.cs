@@ -64,7 +64,7 @@ public class MainMenuUI : MonoBehaviour
             TextMeshProUGUI btnText = playButton.GetComponentInChildren<TextMeshProUGUI>();
             if (btnText != null)
             {
-                btnText.text = "▶️ PLAY GAME";
+                btnText.text = "PLAY GAME";
                 btnText.fontSize = 15;
             }
         }
@@ -78,7 +78,7 @@ public class MainMenuUI : MonoBehaviour
             TextMeshProUGUI btnText = tutorialButton.GetComponentInChildren<TextMeshProUGUI>();
             if (btnText != null)
             {
-                btnText.text = "📚 TUTORIAL";
+                btnText.text = "TUTORIAL";
                 btnText.fontSize = 15;
             }
         }
@@ -92,7 +92,7 @@ public class MainMenuUI : MonoBehaviour
             TextMeshProUGUI btnText = quitButton.GetComponentInChildren<TextMeshProUGUI>();
             if (btnText != null)
             {
-                btnText.text = "❌ QUIT";
+                btnText.text = "QUIT";
                 btnText.fontSize = 15;
             }
         }

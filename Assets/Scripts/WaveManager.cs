@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.AI.Navigation;
 
 public class WaveManager : MonoBehaviour
 {
@@ -141,8 +142,20 @@ public class WaveManager : MonoBehaviour
         // Pick random spawn point
         Transform spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
         
+        // Find valid NavMesh position near spawn point
+        UnityEngine.AI.NavMeshHit hit;
+        Vector3 spawnPos = spawnPoint.position;
+        if (UnityEngine.AI.NavMesh.SamplePosition(spawnPos, out hit, 5f, UnityEngine.AI.NavMesh.AllAreas))
+        {
+            spawnPos = hit.position;
+        }
+        else
+        {
+            Debug.LogWarning($"Could not find NavMesh position near {spawnPoint.position} for enemy spawn");
+        }
+        
         // Spawn enemy
-        GameObject enemyObj = Instantiate(enemyPrefabs[enemyTypeIndex], spawnPoint.position, Quaternion.identity);
+        GameObject enemyObj = Instantiate(enemyPrefabs[enemyTypeIndex], spawnPos, Quaternion.identity);
         EnemyAI enemy = enemyObj.GetComponent<EnemyAI>();
         
         if (enemy != null)

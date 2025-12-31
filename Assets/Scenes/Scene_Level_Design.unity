@@ -167,7 +167,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 427246, guid: 7aa6f6434be94e44583bd055d3a42eee, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 3.58
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 427246, guid: 7aa6f6434be94e44583bd055d3a42eee, type: 3}
       propertyPath: m_LocalPosition.y
@@ -175,23 +175,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 427246, guid: 7aa6f6434be94e44583bd055d3a42eee, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 11.14
+      value: 16
       objectReference: {fileID: 0}
     - target: {fileID: 427246, guid: 7aa6f6434be94e44583bd055d3a42eee, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 1
+      value: 0.056670647
       objectReference: {fileID: 0}
     - target: {fileID: 427246, guid: 7aa6f6434be94e44583bd055d3a42eee, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 427246, guid: 7aa6f6434be94e44583bd055d3a42eee, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: 0.998393
       objectReference: {fileID: 0}
     - target: {fileID: 427246, guid: 7aa6f6434be94e44583bd055d3a42eee, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 427246, guid: 7aa6f6434be94e44583bd055d3a42eee, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -199,7 +199,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 427246, guid: 7aa6f6434be94e44583bd055d3a42eee, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
+      value: 173.503
       objectReference: {fileID: 0}
     - target: {fileID: 427246, guid: 7aa6f6434be94e44583bd055d3a42eee, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
@@ -1404,9 +1404,6 @@ MonoBehaviour:
   m_Script: {fileID: 675160697}
   m_Name: 
   m_EditorClassIdentifier: 
-  normalScale: {x: 1, y: 1, z: 1}
-  hoverScale: {x: 1.1, y: 1.1, z: 1}
-  animationSpeed: 5
 --- !u!115 &675160697
 MonoScript:
   m_ObjectHideFlags: 0
@@ -1935,9 +1932,6 @@ MonoBehaviour:
   m_Script: {fileID: 1579710228}
   m_Name: 
   m_EditorClassIdentifier: 
-  pulseSpeed: 2
-  minIntensity: 0.7
-  maxIntensity: 1.5
 --- !u!1 &1025142661
 GameObject:
   m_ObjectHideFlags: 0
@@ -2332,9 +2326,6 @@ MonoBehaviour:
   m_Script: {fileID: 1579710228}
   m_Name: 
   m_EditorClassIdentifier: 
-  pulseSpeed: 1.5
-  minIntensity: 0.5
-  maxIntensity: 2
 --- !u!1 &1467863043
 GameObject:
   m_ObjectHideFlags: 0

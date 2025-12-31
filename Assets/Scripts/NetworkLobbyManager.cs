@@ -14,6 +14,7 @@ public class NetworkLobbyManager : MonoBehaviour
     public GameObject lobbyPanel;
     public TextMeshProUGUI lobbyTitle;
     public TextMeshProUGUI lobbyCodeText;  // Shows the generated lobby code
+    public TextMeshProUGUI statusText;     // Shows connection status
     public TextMeshProUGUI playerCountText;
     public Button hostButton;
     public Button joinButton;
@@ -58,8 +59,8 @@ public class NetworkLobbyManager : MonoBehaviour
         // Lobby Title
         if (lobbyTitle != null)
         {
-            lobbyTitle.text = "🌐 CYBER KROMA LOBBY\n<size=28>Up to 4 Players Co-op</size>";
-            lobbyTitle.fontSize = 48;
+            lobbyTitle.text = "CYBER KROMA LOBBY\n<size=28>Up to 4 Players Co-op</size>";
+            lobbyTitle.fontSize = 80;
             lobbyTitle.alignment = TextAlignmentOptions.Center;
             lobbyTitle.color = new Color(0f, 0.9f, 1f); // Cyan
         }
@@ -79,6 +80,15 @@ public class NetworkLobbyManager : MonoBehaviour
         if (lobbyCodeText != null)
         {
             lobbyCodeText.gameObject.SetActive(false);
+        }
+        
+        // Status text
+        if (statusText != null)
+        {
+            statusText.text = "Ready to host or join";
+            statusText.fontSize = 60;
+            statusText.alignment = TextAlignmentOptions.Center;
+            statusText.color = Color.white;
         }
         
         // Start button initially disabled (only host can start)
@@ -104,7 +114,7 @@ public class NetworkLobbyManager : MonoBehaviour
             if (btnText != null)
             {
                 btnText.text = "🏠 HOST GAME";
-                btnText.fontSize = 32;
+                btnText.fontSize = 15;
             }
         }
         
@@ -137,9 +147,9 @@ public class NetworkLobbyManager : MonoBehaviour
         }
         
         // Class Selection Buttons
-        SetupClassButton(firewallButton, "Firewall", "🛡️ FIREWALL\n<size=20>High Defense</size>");
-        SetupClassButton(debuggerButton, "Debugger", "🔧 DEBUGGER\n<size=20>High Damage</size>");
-        SetupClassButton(scannerButton, "Scanner", "🔍 SCANNER\n<size=20>Detect Stealth</size>");
+        SetupClassButton(firewallButton, "Firewall", "🛡️ FIREWALL\n<size=15>High Defense</size>");
+        SetupClassButton(debuggerButton, "Debugger", "🔧 DEBUGGER\n<size=15>High Damage</size>");
+        SetupClassButton(scannerButton, "Scanner", "🔍 SCANNER\n<size=15>Detect Stealth</size>");
     }
     
     void SetupClassButton(Button button, string className, string displayText)
@@ -153,7 +163,7 @@ public class NetworkLobbyManager : MonoBehaviour
         if (btnText != null)
         {
             btnText.text = displayText;
-            btnText.fontSize = 30;
+            btnText.fontSize = 15;
         }
     }
     
@@ -168,13 +178,20 @@ public class NetworkLobbyManager : MonoBehaviour
             
             networkManager.StartHost();
             
-            // Display lobby code for others to join
+            // Display lobby code PROMINENTLY for others to join
             if (lobbyCodeText != null)
             {
                 lobbyCodeText.gameObject.SetActive(true);
-                lobbyCodeText.text = $"🔑 Lobby Code: <color=#FFD700>{currentLobbyCode}</color>\n<size=20>Share this code with your friends!</size>";
+                lobbyCodeText.text = $"🔑 LOBBY CODE:\n<size=64><color=#FFD700>{currentLobbyCode}</color></size>\n<size=24>Share this with friends!</size>";
                 lobbyCodeText.fontSize = 32;
                 lobbyCodeText.alignment = TextAlignmentOptions.Center;
+            }
+            
+            // Update status
+            if (statusText != null)
+            {
+                statusText.text = "<color=#00FF00>✅ Hosting! Waiting for players...</color>";
+                statusText.fontSize = 28;
             }
             
             // Enable start button for host
@@ -204,6 +221,10 @@ public class NetworkLobbyManager : MonoBehaviour
             if (string.IsNullOrEmpty(joinCode))
             {
                 Debug.LogWarning("❌ Please enter a join code!");
+                if (statusText != null)
+                {
+                    statusText.text = "<color=#FF0000>❌ Please enter a join code!</color>";
+                }
                 return;
             }
             
@@ -211,7 +232,17 @@ public class NetworkLobbyManager : MonoBehaviour
             if (joinCode.Length != 6)
             {
                 Debug.LogWarning("❌ Join code must be 6 characters!");
+                if (statusText != null)
+                {
+                    statusText.text = "<color=#FF0000>❌ Code must be 6 characters!</color>";
+                }
                 return;
+            }
+            
+            // Update status
+            if (statusText != null)
+            {
+                statusText.text = $"<color=#FFFF00>🔗 Joining lobby: {joinCode}...</color>";
             }
             
             // For local network testing, we use localhost
@@ -229,6 +260,12 @@ public class NetworkLobbyManager : MonoBehaviour
             
             // Show class selection
             ShowClassSelection();
+            
+            // Update status on successful connection
+            if (statusText != null)
+            {
+                statusText.text = $"<color=#00FF00>✅ Joined lobby: {joinCode}</color>";
+            }
             
             UpdatePlayerCount();
             

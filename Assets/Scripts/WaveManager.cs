@@ -24,7 +24,6 @@ public class WaveManager : MonoBehaviour
     public GameObject victoryPanel;
     
     private List<EnemyAI> activeEnemies = new List<EnemyAI>();
-    private bool waveInProgress = false;
     private bool gameOver = false;
     private LokTaShop shop;
 
@@ -112,8 +111,6 @@ public class WaveManager : MonoBehaviour
 
     IEnumerator SpawnWave(WaveConfig config)
     {
-        waveInProgress = true;
-        
         // Spawn Phishers
         for (int i = 0; i < config.phisherCount; i++)
         {
@@ -134,8 +131,6 @@ public class WaveManager : MonoBehaviour
             SpawnEnemy(2); // DeepFake
             yield return new WaitForSeconds(config.spawnDelay);
         }
-        
-        waveInProgress = false;
     }
 
     void SpawnEnemy(int enemyTypeIndex)
